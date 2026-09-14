@@ -1,0 +1,28 @@
+{
+  "nodes": [
+    {
+      "key": "appicon", "type": "FRAME",
+      "props": { "name": "App Icon / Loop / 1024", "width": 1024, "height": 1024, "fills": [], "clipsContent": false },
+      "children": [
+        {
+          "key": "base", "type": "RECTANGLE",
+          "props": { "name": "Base", "width": 1024, "height": 1024, "cornerRadius": 230, "fills": [{ "type": "SOLID", "color": { "r": 0.157, "g": 0.388, "b": 0.294 } }] }
+        },
+        {
+          "key": "mark", "type": "BOOLEAN", "operation": "SUBTRACT",
+          "props": { "name": "Mark / Editable loop", "x": 220, "y": 220, "fills": [{ "type": "SOLID", "color": { "r": 1, "g": 1, "b": 1 } }] },
+          "children": [
+            {
+              "key": "outer", "type": "BOOLEAN", "operation": "UNION",
+              "children": [
+                { "type": "ELLIPSE", "props": { "name": "Outer ring", "width": 584, "height": 584 } },
+                { "type": "RECTANGLE", "props": { "name": "Stem", "x": 368, "y": 306, "width": 180, "height": 330, "cornerRadius": 90, "rotation": 28 } }
+              ]
+            },
+            { "key": "cutout", "type": "ELLIPSE", "props": { "name": "Inner cutout", "x": 118, "y": 118, "width": 348, "height": 348 } }
+          ]
+        }
+      ]
+    }
+  ]
+}

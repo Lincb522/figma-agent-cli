@@ -1,0 +1,414 @@
+{
+  "nodes": [
+    {
+      "key": "workbench",
+      "type": "FRAME",
+      "props": {
+        "name": "App Icon / Camera / 1024",
+        "width": 1024,
+        "height": 1024,
+        "fills": [],
+        "clipsContent": false
+      },
+      "children": [
+        {
+          "key": "icon",
+          "tag": "icon-artwork-v1",
+          "type": "FRAME",
+          "props": {
+            "name": "Artwork / Export this frame",
+            "width": 1024,
+            "height": 1024,
+            "x": 0,
+            "y": 0,
+            "fills": [],
+            "clipsContent": false
+          },
+          "children": [
+            {
+              "key": "mark",
+              "type": "SVG",
+              "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1024\" height=\"1024\" viewBox=\"0 0 1024 1024\"><g id=\"mark\" stroke-width=\"93.867\" stroke-linecap=\"round\" stroke-linejoin=\"round\">\n<path id=\"body\" d=\"M128 298.6667h170.6667l85.3333-128h256l85.3333 128h170.6667v554.6666H128Z\" fill=\"none\" stroke=\"#28634B\"/>\n<path id=\"lens\" d=\"M682.6667 554.6667a170.6667 170.6667 0 1 1-341.3334 0 170.6667 170.6667 0 0 1 341.3334 0Z\" fill=\"none\" stroke=\"#28634B\"/>\n</g></svg>",
+              "props": {
+                "name": "Mark / Camera",
+                "x": 0,
+                "y": 0
+              }
+            }
+          ]
+        },
+        {
+          "key": "guides",
+          "tag": "icon-guides-v1",
+          "type": "FRAME",
+          "props": {
+            "name": "Guides / Keylines",
+            "width": 1024,
+            "height": 1024,
+            "x": 0,
+            "y": 0,
+            "fills": [],
+            "clipsContent": false,
+            "locked": true
+          },
+          "children": [
+            {
+              "key": "guide-boundary",
+              "type": "RECTANGLE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Boundary",
+                "width": 1024,
+                "height": 1024,
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Horizontal / 0.3333333333333333",
+                "width": 1024,
+                "height": 0,
+                "x": 0,
+                "y": 341.3333333333333,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Vertical / 0.3333333333333333",
+                "width": 1024,
+                "height": 0,
+                "x": 341.3333333333333,
+                "y": 0,
+                "rotation": -90,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Horizontal / 0.5",
+                "width": 1024,
+                "height": 0,
+                "x": 0,
+                "y": 512,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Vertical / 0.5",
+                "width": 1024,
+                "height": 0,
+                "x": 512,
+                "y": 0,
+                "rotation": -90,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Horizontal / 0.6666666666666666",
+                "width": 1024,
+                "height": 0,
+                "x": 0,
+                "y": 682.6666666666666,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Vertical / 0.6666666666666666",
+                "width": 1024,
+                "height": 0,
+                "x": 682.6666666666666,
+                "y": 0,
+                "rotation": -90,
+                "opacity": 0.55
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Diagonal / descending",
+                "width": 1448.1546878700494,
+                "height": 0,
+                "x": 0,
+                "y": 0,
+                "rotation": -45,
+                "opacity": 0.65
+              }
+            },
+            {
+              "type": "LINE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "Diagonal / ascending",
+                "width": 1448.1546878700494,
+                "height": 0,
+                "x": 0,
+                "y": 1024,
+                "rotation": 45,
+                "opacity": 0.65
+              }
+            },
+            {
+              "key": "guide-circle",
+              "tag": "icon-keyline-shape:circle",
+              "type": "ELLIPSE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "circle",
+                "x": 85.33333333333333,
+                "y": 85.33333333333333,
+                "width": 853.3333333333333,
+                "height": 853.3333333333333,
+                "opacity": 0.85
+              }
+            },
+            {
+              "key": "guide-inner-circle",
+              "tag": "icon-keyline-shape:inner-circle",
+              "type": "ELLIPSE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "inner-circle",
+                "x": 298.66666666666663,
+                "y": 298.66666666666663,
+                "width": 426.66666666666663,
+                "height": 426.66666666666663,
+                "opacity": 0.5
+              }
+            },
+            {
+              "key": "guide-square",
+              "tag": "icon-keyline-shape:square",
+              "type": "RECTANGLE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "square",
+                "x": 128,
+                "y": 128,
+                "width": 768,
+                "height": 768,
+                "cornerRadius": 85.33333333333333,
+                "opacity": 0.85
+              }
+            },
+            {
+              "key": "guide-portrait",
+              "tag": "icon-keyline-shape:portrait",
+              "type": "RECTANGLE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "portrait",
+                "x": 170.66666666666666,
+                "y": 85.33333333333333,
+                "width": 682.6666666666666,
+                "height": 853.3333333333333,
+                "cornerRadius": 85.33333333333333,
+                "opacity": 0.85
+              }
+            },
+            {
+              "key": "guide-landscape",
+              "tag": "icon-keyline-shape:landscape",
+              "type": "RECTANGLE",
+              "props": {
+                "fills": [],
+                "strokes": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.6392156862745098,
+                      "g": 0.6274509803921569,
+                      "b": 0.6666666666666666
+                    },
+                    "opacity": 1
+                  }
+                ],
+                "strokeWeight": 4.266666666666667,
+                "name": "landscape",
+                "x": 85.33333333333333,
+                "y": 170.66666666666666,
+                "width": 853.3333333333333,
+                "height": 682.6666666666666,
+                "cornerRadius": 85.33333333333333,
+                "opacity": 0.85
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

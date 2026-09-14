@@ -1,0 +1,33 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+const exec = promisify(execFile);
+
+test('skill installer resolves a moved checkout and preserves an existing installation', async t => {
+  const evidence = resolve(process.env.FIGMA_AGENT_TEST_OUTPUT ?? 'work/verification');
+  await mkdir(evidence, { recursive: true });
+  const directory = await mkdtemp(resolve(evidence, 'skill-'));
+  t.after(() => rm(directory, { recursive: true, force: true }));
+  const checkout = resolve(directory, "User's project $with spaces");
+  await mkdir(resolve(checkout, 'scripts'), { recursive: true });
+  await mkdir(resolve(checkout, 'dist'));
+  await cp('scripts/install-skill.mjs', resolve(checkout, 'scripts/install-skill.mjs'));
+  await cp('skills', resolve(checkout, 'skills'), { recursive: true });
+  await writeFile(resolve(checkout, 'dist/cli.js'), 'console.log("installed-cli-reached")');
+  const destination = resolve(directory, 'personal-skills');
+  const args = [resolve(checkout, 'scripts/install-skill.mjs'), '--skills-dir', destination];
+  await exec(process.execPath, args, { cwd: directory });
+  const installed = resolve(destination, 'figma-agent/SKILL.md');
+  const text = await readFile(installed, 'utf8');
+  assert.ok(text.includes(checkout));
+  assert.ok(!text.includes('{{PROJECT_ROOT}}') && !text.includes('{{CLI_SHELL_PATH}}'));
+  const command = text.split('\n').find(line => line.startsWith('node '))!;
+  assert.equal((await exec('/bin/sh', ['-c', command], { cwd: directory })).stdout.trim(), 'installed-cli-reached');
+  await writeFile(installed, text + '\nUser customization.\n');
+  await assert.rejects(exec(process.execPath, args), (error: any) => /already exists/.test(error.stderr));
+  assert.equal(await readFile(installed, 'utf8'), text + '\nUser customization.\n');
+  assert.deepEqual(await readdir(destination), ['figma-agent']);
+});

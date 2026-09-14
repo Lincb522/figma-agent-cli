@@ -1,0 +1,66 @@
+{
+  "date": "2026-09-14T04:23:36.709Z",
+  "source": "Local analytic SVG rendered in Chrome; not a Figma export",
+  "results": [
+    {
+      "viewport": 320,
+      "scroll": 320,
+      "images": [
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "width": 320,
+      "keyboard": true,
+      "buttons": true,
+      "errors": []
+    },
+    {
+      "viewport": 1280,
+      "scroll": 1280,
+      "images": [
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        },
+        {
+          "loaded": true,
+          "width": 1254,
+          "height": 1254
+        }
+      ],
+      "width": 1280,
+      "keyboard": true,
+      "buttons": true,
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "name": "figma-agent-cli",
+  "version": "0.3.3",
+  "description": "A local Figma plugin and CLI for agent-driven editable UI design",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "figma-agent": "dist/cli.js"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit && tsc -p tsconfig.ui.json --noEmit",
+    "test": "tsx --test tests/*.test.ts",
+    "check": "npm run typecheck && npm run build && npm test",
+    "start": "node dist/cli.js serve",
+    "cli": "node dist/cli.js",
+    "test:ui": "npm run build && playwright test --config playwright.config.mjs",
+    "skill:install": "node scripts/install-skill.mjs"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "1.138.0",
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.0.0",
+    "@types/pngjs": "^6.0.5",
+    "esbuild": "0.28.2",
+    "tsx": "^4.20.0",
+    "typescript": "^5.9.0"
+  },
+  "dependencies": {
+    "pngjs": "^7.0.0",
+    "svgpath": "^2.6.0"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Lincb522/figma-agent-cli.git"
+  }
+}

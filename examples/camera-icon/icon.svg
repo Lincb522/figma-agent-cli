@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" role="img" aria-label="Camera">
+
+<g transform="translate(0 0)"><g id="mark" stroke-width="93.867" stroke-linecap="round" stroke-linejoin="round">
+<path id="body" d="M128 298.6667h170.6667l85.3333-128h256l85.3333 128h170.6667v554.6666H128Z" fill="none" stroke="#28634B"/>
+<path id="lens" d="M682.6667 554.6667a170.6667 170.6667 0 1 1-341.3334 0 170.6667 170.6667 0 0 1 341.3334 0Z" fill="none" stroke="#28634B"/>
+</g></g>
+</svg>

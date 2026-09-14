@@ -1,0 +1,28 @@
+{
+  "definition": {
+    "name": "Camera",
+    "paths": [
+      {
+        "name": "body",
+        "d": "M3 7h4l2-3h6l2 3h4v13H3Z"
+      },
+      {
+        "name": "lens",
+        "d": "M16 13a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z"
+      }
+    ]
+  },
+  "options": {
+    "name": "Camera",
+    "kind": "app",
+    "size": 1024,
+    "plate": "none",
+    "padding": 0,
+    "radius": 230.4,
+    "stroke": 2.2,
+    "physicalStroke": 93.867,
+    "background": "#28634B",
+    "foreground": "#28634B",
+    "pathCount": 2
+  }
+}

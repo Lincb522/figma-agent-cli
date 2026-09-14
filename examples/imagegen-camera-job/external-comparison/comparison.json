@@ -1,0 +1,9 @@
+{
+  "source": "external",
+  "width": 1254,
+  "height": 1254,
+  "meanAbsoluteChannelError": 35.43178341799596,
+  "changedPixelFraction": 0.24086432188925264,
+  "threshold": 16,
+  "interpretation": "Pixel difference diagnostics, not a perceptual similarity score. Visual review is still required."
+}

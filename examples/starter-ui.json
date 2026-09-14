@@ -1,0 +1,1452 @@
+{
+  "nodes": [
+    {
+      "key": "mobile/screen",
+      "type": "FRAME",
+      "props": {
+        "name": "mobile/screen",
+        "layoutMode": "VERTICAL",
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.9529411764705882,
+              "g": 0.9607843137254902,
+              "b": 0.9411764705882353
+            }
+          }
+        ],
+        "itemSpacing": 20,
+        "width": 390,
+        "height": 844,
+        "x": 0,
+        "y": 0,
+        "paddingTop": 28,
+        "paddingRight": 24,
+        "paddingBottom": 24,
+        "paddingLeft": 24,
+        "clipsContent": true,
+        "primaryAxisSizingMode": "FIXED",
+        "counterAxisSizingMode": "FIXED"
+      },
+      "children": [
+        {
+          "key": "mobile/nav",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/nav",
+            "layoutMode": "HORIZONTAL",
+            "fills": [],
+            "itemSpacing": 16,
+            "width": 342,
+            "height": 32,
+            "primaryAxisAlignItems": "SPACE_BETWEEN",
+            "counterAxisAlignItems": "CENTER"
+          },
+          "children": [
+            {
+              "key": "mobile/brand",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/brand",
+                "characters": "Studio",
+                "fontSize": 18,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/avatar",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/avatar",
+                "characters": "LC",
+                "fontSize": 12,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1568627450980392,
+                      "g": 0.4235294117647059,
+                      "b": 0.2901960784313726
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/header",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/header",
+            "layoutMode": "VERTICAL",
+            "fills": [],
+            "itemSpacing": 12,
+            "width": 342,
+            "height": 108
+          },
+          "children": [
+            {
+              "key": "mobile/date",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/date",
+                "characters": "MONDAY, SEPTEMBER 14",
+                "fontSize": 10,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/title",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/title",
+                "characters": "Your workspace",
+                "fontSize": 29,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/subtitle",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/subtitle",
+                "characters": "3 projects need your attention.",
+                "fontSize": 13,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/summary",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/summary",
+            "layoutMode": "VERTICAL",
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.1568627450980392,
+                  "g": 0.4235294117647059,
+                  "b": 0.2901960784313726
+                }
+              }
+            ],
+            "itemSpacing": 13,
+            "width": 342,
+            "height": 132,
+            "paddingTop": 21,
+            "paddingLeft": 22,
+            "paddingRight": 22,
+            "paddingBottom": 21,
+            "cornerRadius": 16
+          },
+          "children": [
+            {
+              "key": "mobile/summary-label",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/summary-label",
+                "characters": "THIS WEEK",
+                "fontSize": 10,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.7372549019607844,
+                      "g": 0.8352941176470589,
+                      "b": 0.7764705882352941
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/summary-number",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/summary-number",
+                "characters": "12 tasks completed",
+                "fontSize": 22,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 1.0
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/summary-detail",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/summary-detail",
+                "characters": "4 more than last week",
+                "fontSize": 12,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.8313725490196079,
+                      "g": 0.8980392156862745,
+                      "b": 0.8588235294117647
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/projects-heading",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/projects-heading",
+            "layoutMode": "HORIZONTAL",
+            "fills": [],
+            "itemSpacing": 16,
+            "width": 342,
+            "height": 26,
+            "primaryAxisAlignItems": "SPACE_BETWEEN",
+            "counterAxisAlignItems": "CENTER"
+          },
+          "children": [
+            {
+              "key": "mobile/projects-label",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/projects-label",
+                "characters": "Active projects",
+                "fontSize": 18,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/view-all",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/view-all",
+                "characters": "View all",
+                "fontSize": 12,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1568627450980392,
+                      "g": 0.4235294117647059,
+                      "b": 0.2901960784313726
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/project-1",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/project-1",
+            "layoutMode": "VERTICAL",
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0
+                }
+              }
+            ],
+            "itemSpacing": 10,
+            "width": 342,
+            "height": 114,
+            "paddingTop": 16,
+            "paddingBottom": 16,
+            "paddingLeft": 18,
+            "paddingRight": 18,
+            "cornerRadius": 12,
+            "primaryAxisSizingMode": "FIXED",
+            "counterAxisSizingMode": "FIXED"
+          },
+          "children": [
+            {
+              "key": "mobile/project-1/title",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-1/title",
+                "characters": "Website refresh",
+                "fontSize": 16,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/project-1/detail",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-1/detail",
+                "characters": "8 of 12 tasks completed",
+                "fontSize": 12,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/project-1/badge",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-1/badge",
+                "characters": "In progress",
+                "fontSize": 11,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1568627450980392,
+                      "g": 0.4235294117647059,
+                      "b": 0.2901960784313726
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/project-2",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/project-2",
+            "layoutMode": "VERTICAL",
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0
+                }
+              }
+            ],
+            "itemSpacing": 10,
+            "width": 342,
+            "height": 114,
+            "paddingTop": 16,
+            "paddingBottom": 16,
+            "paddingLeft": 18,
+            "paddingRight": 18,
+            "cornerRadius": 12,
+            "primaryAxisSizingMode": "FIXED",
+            "counterAxisSizingMode": "FIXED"
+          },
+          "children": [
+            {
+              "key": "mobile/project-2/title",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-2/title",
+                "characters": "Design system",
+                "fontSize": 16,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/project-2/detail",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-2/detail",
+                "characters": "Component review · Due tomorrow",
+                "fontSize": 12,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "mobile/project-2/badge",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/project-2/badge",
+                "characters": "Needs review",
+                "fontSize": 11,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1568627450980392,
+                      "g": 0.4235294117647059,
+                      "b": 0.2901960784313726
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "mobile/action",
+          "type": "FRAME",
+          "props": {
+            "name": "mobile/action",
+            "layoutMode": "HORIZONTAL",
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 0.1568627450980392,
+                  "g": 0.4235294117647059,
+                  "b": 0.2901960784313726
+                }
+              }
+            ],
+            "itemSpacing": 16,
+            "width": 342,
+            "height": 48,
+            "primaryAxisAlignItems": "CENTER",
+            "counterAxisAlignItems": "CENTER",
+            "cornerRadius": 10
+          },
+          "children": [
+            {
+              "key": "mobile/action-label",
+              "type": "TEXT",
+              "props": {
+                "name": "mobile/action-label",
+                "characters": "+ New project",
+                "fontSize": 14,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 1.0
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "key": "desktop/screen",
+      "type": "FRAME",
+      "props": {
+        "name": "desktop/screen",
+        "layoutMode": "HORIZONTAL",
+        "fills": [
+          {
+            "type": "SOLID",
+            "color": {
+              "r": 0.9529411764705882,
+              "g": 0.9607843137254902,
+              "b": 0.9411764705882353
+            }
+          }
+        ],
+        "itemSpacing": 0,
+        "width": 1300,
+        "height": 900,
+        "x": 486,
+        "y": 0,
+        "clipsContent": true
+      },
+      "children": [
+        {
+          "key": "desktop/sidebar",
+          "type": "FRAME",
+          "props": {
+            "name": "desktop/sidebar",
+            "layoutMode": "VERTICAL",
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1.0,
+                  "g": 1.0,
+                  "b": 1.0
+                }
+              }
+            ],
+            "itemSpacing": 32,
+            "width": 212,
+            "height": 900,
+            "paddingTop": 36,
+            "paddingLeft": 28,
+            "paddingRight": 28,
+            "paddingBottom": 28
+          },
+          "children": [
+            {
+              "key": "desktop/brand",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/brand",
+                "characters": "Studio",
+                "fontSize": 23,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "desktop/nav-overview",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/nav-overview",
+                "characters": "Overview",
+                "fontSize": 14,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1568627450980392,
+                      "g": 0.4235294117647059,
+                      "b": 0.2901960784313726
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "desktop/nav-projects",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/nav-projects",
+                "characters": "Projects",
+                "fontSize": 14,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "desktop/nav-team",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/nav-team",
+                "characters": "Team",
+                "fontSize": 14,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "desktop/nav-settings",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/nav-settings",
+                "characters": "Settings",
+                "fontSize": 14,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Regular"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.4,
+                      "g": 0.4549019607843137,
+                      "b": 0.4235294117647059
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "key": "desktop/content",
+          "type": "FRAME",
+          "props": {
+            "name": "desktop/content",
+            "layoutMode": "VERTICAL",
+            "fills": [],
+            "itemSpacing": 24,
+            "width": 1088,
+            "height": 900,
+            "paddingTop": 40,
+            "paddingLeft": 48,
+            "paddingRight": 48,
+            "paddingBottom": 40
+          },
+          "children": [
+            {
+              "key": "desktop/header",
+              "type": "FRAME",
+              "props": {
+                "name": "desktop/header",
+                "layoutMode": "VERTICAL",
+                "fills": [],
+                "itemSpacing": 16,
+                "width": 992,
+                "height": 96
+              },
+              "children": [
+                {
+                  "key": "desktop/title",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/title",
+                    "characters": "Workspace overview",
+                    "fontSize": 32,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Bold"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1450980392156863,
+                          "g": 0.21176470588235294,
+                          "b": 0.1843137254901961
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/subtitle",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/subtitle",
+                    "characters": "Monday, September 14 · Keep your team moving.",
+                    "fontSize": 14,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.4,
+                          "g": 0.4549019607843137,
+                          "b": 0.4235294117647059
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "key": "desktop/metrics",
+              "type": "FRAME",
+              "props": {
+                "name": "desktop/metrics",
+                "layoutMode": "HORIZONTAL",
+                "fills": [],
+                "itemSpacing": 16,
+                "width": 992,
+                "height": 164
+              },
+              "children": [
+                {
+                  "key": "desktop/completed",
+                  "type": "FRAME",
+                  "props": {
+                    "name": "desktop/completed",
+                    "layoutMode": "VERTICAL",
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1568627450980392,
+                          "g": 0.4235294117647059,
+                          "b": 0.2901960784313726
+                        }
+                      }
+                    ],
+                    "itemSpacing": 15,
+                    "width": 320,
+                    "height": 164,
+                    "paddingTop": 24,
+                    "paddingLeft": 26,
+                    "cornerRadius": 14
+                  },
+                  "children": [
+                    {
+                      "key": "desktop/completed-label",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/completed-label",
+                        "characters": "Tasks completed",
+                        "fontSize": 13,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.8313725490196079,
+                              "g": 0.8980392156862745,
+                              "b": 0.8588235294117647
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/completed-value",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/completed-value",
+                        "characters": "12",
+                        "fontSize": 40,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Bold"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 1.0,
+                              "g": 1.0,
+                              "b": 1.0
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/completed-detail",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/completed-detail",
+                        "characters": "4 more than last week",
+                        "fontSize": 12,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.8313725490196079,
+                              "g": 0.8980392156862745,
+                              "b": 0.8588235294117647
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "desktop/active",
+                  "type": "FRAME",
+                  "props": {
+                    "name": "desktop/active",
+                    "layoutMode": "VERTICAL",
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 1.0,
+                          "g": 1.0,
+                          "b": 1.0
+                        }
+                      }
+                    ],
+                    "itemSpacing": 15,
+                    "width": 320,
+                    "height": 164,
+                    "paddingTop": 24,
+                    "paddingLeft": 26,
+                    "cornerRadius": 14
+                  },
+                  "children": [
+                    {
+                      "key": "desktop/active-label",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/active-label",
+                        "characters": "Active projects",
+                        "fontSize": 13,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.4,
+                              "g": 0.4549019607843137,
+                              "b": 0.4235294117647059
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/active-value",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/active-value",
+                        "characters": "03",
+                        "fontSize": 40,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Bold"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.1450980392156863,
+                              "g": 0.21176470588235294,
+                              "b": 0.1843137254901961
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/active-detail",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/active-detail",
+                        "characters": "2 due this week",
+                        "fontSize": 12,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.4,
+                              "g": 0.4549019607843137,
+                              "b": 0.4235294117647059
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                },
+                {
+                  "key": "desktop/team",
+                  "type": "FRAME",
+                  "props": {
+                    "name": "desktop/team",
+                    "layoutMode": "VERTICAL",
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 1.0,
+                          "g": 1.0,
+                          "b": 1.0
+                        }
+                      }
+                    ],
+                    "itemSpacing": 15,
+                    "width": 320,
+                    "height": 164,
+                    "paddingTop": 24,
+                    "paddingLeft": 26,
+                    "cornerRadius": 14
+                  },
+                  "children": [
+                    {
+                      "key": "desktop/team-label",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/team-label",
+                        "characters": "Team members",
+                        "fontSize": 13,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.4,
+                              "g": 0.4549019607843137,
+                              "b": 0.4235294117647059
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/team-value",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/team-value",
+                        "characters": "08",
+                        "fontSize": 40,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Bold"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.1450980392156863,
+                              "g": 0.21176470588235294,
+                              "b": 0.1843137254901961
+                            }
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "key": "desktop/team-detail",
+                      "type": "TEXT",
+                      "props": {
+                        "name": "desktop/team-detail",
+                        "characters": "Across 3 projects",
+                        "fontSize": 12,
+                        "fontName": {
+                          "family": "Inter",
+                          "style": "Regular"
+                        },
+                        "fills": [
+                          {
+                            "type": "SOLID",
+                            "color": {
+                              "r": 0.4,
+                              "g": 0.4549019607843137,
+                              "b": 0.4235294117647059
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "key": "desktop/projects-heading",
+              "type": "TEXT",
+              "props": {
+                "name": "desktop/projects-heading",
+                "characters": "Active projects",
+                "fontSize": 22,
+                "fontName": {
+                  "family": "Inter",
+                  "style": "Bold"
+                },
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.1450980392156863,
+                      "g": 0.21176470588235294,
+                      "b": 0.1843137254901961
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "desktop/project-1",
+              "type": "FRAME",
+              "props": {
+                "name": "desktop/project-1",
+                "layoutMode": "VERTICAL",
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 1.0
+                    }
+                  }
+                ],
+                "itemSpacing": 10,
+                "width": 992,
+                "height": 114,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "paddingLeft": 18,
+                "paddingRight": 18,
+                "cornerRadius": 12,
+                "primaryAxisSizingMode": "FIXED",
+                "counterAxisSizingMode": "FIXED"
+              },
+              "children": [
+                {
+                  "key": "desktop/project-1/title",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-1/title",
+                    "characters": "Website refresh",
+                    "fontSize": 16,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Bold"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1450980392156863,
+                          "g": 0.21176470588235294,
+                          "b": 0.1843137254901961
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-1/detail",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-1/detail",
+                    "characters": "8 of 12 tasks completed · Updated 2 hours ago",
+                    "fontSize": 12,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.4,
+                          "g": 0.4549019607843137,
+                          "b": 0.4235294117647059
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-1/badge",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-1/badge",
+                    "characters": "In progress",
+                    "fontSize": 11,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1568627450980392,
+                          "g": 0.4235294117647059,
+                          "b": 0.2901960784313726
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "key": "desktop/project-2",
+              "type": "FRAME",
+              "props": {
+                "name": "desktop/project-2",
+                "layoutMode": "VERTICAL",
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 1.0
+                    }
+                  }
+                ],
+                "itemSpacing": 10,
+                "width": 992,
+                "height": 114,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "paddingLeft": 18,
+                "paddingRight": 18,
+                "cornerRadius": 12,
+                "primaryAxisSizingMode": "FIXED",
+                "counterAxisSizingMode": "FIXED"
+              },
+              "children": [
+                {
+                  "key": "desktop/project-2/title",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-2/title",
+                    "characters": "Design system",
+                    "fontSize": 16,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Bold"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1450980392156863,
+                          "g": 0.21176470588235294,
+                          "b": 0.1843137254901961
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-2/detail",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-2/detail",
+                    "characters": "Component review · Due tomorrow",
+                    "fontSize": 12,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.4,
+                          "g": 0.4549019607843137,
+                          "b": 0.4235294117647059
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-2/badge",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-2/badge",
+                    "characters": "Needs review",
+                    "fontSize": 11,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1568627450980392,
+                          "g": 0.4235294117647059,
+                          "b": 0.2901960784313726
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              "key": "desktop/project-3",
+              "type": "FRAME",
+              "props": {
+                "name": "desktop/project-3",
+                "layoutMode": "VERTICAL",
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 1.0,
+                      "g": 1.0,
+                      "b": 1.0
+                    }
+                  }
+                ],
+                "itemSpacing": 10,
+                "width": 992,
+                "height": 114,
+                "paddingTop": 16,
+                "paddingBottom": 16,
+                "paddingLeft": 18,
+                "paddingRight": 18,
+                "cornerRadius": 12,
+                "primaryAxisSizingMode": "FIXED",
+                "counterAxisSizingMode": "FIXED"
+              },
+              "children": [
+                {
+                  "key": "desktop/project-3/title",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-3/title",
+                    "characters": "Mobile onboarding",
+                    "fontSize": 16,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Bold"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1450980392156863,
+                          "g": 0.21176470588235294,
+                          "b": 0.1843137254901961
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-3/detail",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-3/detail",
+                    "characters": "Research and flow mapping · Due Friday",
+                    "fontSize": 12,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.4,
+                          "g": 0.4549019607843137,
+                          "b": 0.4235294117647059
+                        }
+                      }
+                    ]
+                  }
+                },
+                {
+                  "key": "desktop/project-3/badge",
+                  "type": "TEXT",
+                  "props": {
+                    "name": "desktop/project-3/badge",
+                    "characters": "In progress",
+                    "fontSize": 11,
+                    "fontName": {
+                      "family": "Inter",
+                      "style": "Regular"
+                    },
+                    "fills": [
+                      {
+                        "type": "SOLID",
+                        "color": {
+                          "r": 0.1568627450980392,
+                          "g": 0.4235294117647059,
+                          "b": 0.2901960784313726
+                        }
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "id": "3c73885a-f36d-4b11-b706-85900baa4f24",
+  "kind": "appicon",
+  "phase": "reference_ready",
+  "createdAt": "2026-09-14T04:04:05.675Z",
+  "requestedSize": {
+    "width": 1024,
+    "height": 1024
+  },
+  "generation": {
+    "id": "8549f01c-72f8-4085-9bc7-ffd5f1ff93df",
+    "tool": "image_gen",
+    "requestedAt": "2026-09-14T04:04:06.041Z",
+    "promptHash": "864e0110ec09c05603daec7a1719ac08d6640396ef26fac27f2cf2139ceec9bd",
+    "receipt": {
+      "resultRef": "exec-bc2748ad-0f6d-468b-ad6e-079540e0352d",
+      "acceptedAt": "2026-09-14T04:06:11.140Z",
+      "sha256": "cb9ce7ee6cc2b639a13c14e2486c92d573b0e0e5b03bf35f880448487359e13a",
+      "provenance": "agent-reported"
+    }
+  },
+  "reference": {
+    "width": 1254,
+    "height": 1254,
+    "sha256": "cb9ce7ee6cc2b639a13c14e2486c92d573b0e0e5b03bf35f880448487359e13a",
+    "source": "image_gen"
+  }
+}

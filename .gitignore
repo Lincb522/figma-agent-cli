@@ -1,0 +1,11 @@
+node_modules/
+.figma-agent/
+*.tgz
+work/
+.DS_Store
+.env
+.env.*
+!.env.example
+.codex/
+test-results/
+playwright-report/

@@ -1,0 +1,19 @@
+{
+  "protocol": "figma-agent-imagegen-v1",
+  "jobId": "3c73885a-f36d-4b11-b706-85900baa4f24",
+  "generationId": "8549f01c-72f8-4085-9bc7-ffd5f1ff93df",
+  "tool": "image_gen",
+  "arguments": {
+    "prompt": "Create one app icon with a distinct base plate and a clear central mark as a visual reference generated with image_gen. Canvas 1024 x 1024 pixels, PNG. Straight-on artwork, no device shell, captions or presentation mockup. Keep simple forms, deliberate negative space and clear small-size readability. The base and mark will be reconstructed as separate editable Figma vector/boolean layers.\n\nBrief:\nCreate a square camera app icon as the reference for the Figma Agent image-to-editable-vector workflow. A simple white camera silhouette centered on a dark forest-green rounded square. The camera body is a continuous filled shape with a raised viewfinder bump and a circular negative-space lens opening; use one smaller white inner lens ring only if it improves readability. Flat vector-like geometry, clear proportions, balanced negative space, broad clean shapes that remain readable at 32 pixels. Use solid flat colors only. Show the icon straight on, on a plain white square canvas. Keep a small even margin around the rounded square. No letters, words, watermark, perspective, device mockup, gloss, shadow, texture or construction grid. The geometry will later be rebuilt with native Figma rectangles, circles and editable boolean operations. Requested output: 1024 x 1024 PNG.\\n\n"
+  },
+  "promptHash": "864e0110ec09c05603daec7a1719ac08d6640396ef26fac27f2cf2139ceec9bd",
+  "execution": "host-agent-tool",
+  "instructions": "The invoking agent must call its available image_gen tool with these arguments exactly once. This CLI has not generated an image. Inspect the returned image, then accept the actual output file. If the tool is unavailable, report that fact; do not substitute an API or another generator.",
+  "accept": {
+    "command": "design accept",
+    "job": "examples/imagegen-camera-job",
+    "image": "<actual local image_gen output file>",
+    "generationId": "8549f01c-72f8-4085-9bc7-ffd5f1ff93df",
+    "resultRef": "<non-secret tool result ID or returned image path>"
+  }
+}

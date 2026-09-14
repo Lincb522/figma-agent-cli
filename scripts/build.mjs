@@ -1,0 +1,12 @@
+import { build } from 'esbuild';
+import { mkdir, readFile, writeFile, chmod } from 'node:fs/promises';
+const { version } = JSON.parse(await readFile('package.json', 'utf8'));
+await mkdir('dist/plugin', { recursive: true });
+await build({ entryPoints: ['src/cli/main.ts'], outfile: 'dist/cli.js', bundle: true, platform: 'node', format: 'esm', target: 'node22', banner: { js: '#!/usr/bin/env node\nimport { createRequire as __createRequire } from "node:module"; const require = __createRequire(import.meta.url);' } });
+await build({ entryPoints: ['src/plugin/main.ts'], outfile: 'dist/plugin/code.js', bundle: true, platform: 'browser', format: 'iife', target: 'es2020', define: { __PLUGIN_VERSION__: JSON.stringify(version) } });
+const ui = await build({ entryPoints: ['src/plugin/ui.ts'], bundle: true, platform: 'browser', format: 'iife', target: 'es2020', write: false });
+const html = (await readFile('src/plugin/ui.html', 'utf8')).replace('__PLUGIN_VERSION__', version).replace('/*__UI_SCRIPT__*/', ui.outputFiles[0].text);
+await writeFile('dist/plugin/ui.html', html);
+await writeFile('dist/plugin/manifest.json', JSON.stringify({ name: 'Figma Agent', id: 'figma-agent-local-dev', api: '1.0.0', main: 'code.js', ui: 'ui.html', editorType: ['figma'], documentAccess: 'dynamic-page', networkAccess: { allowedDomains: ['none'], devAllowedDomains: ['http://localhost:38471'] } }, null, 2) + '\n');
+await chmod('dist/cli.js', 0o755);
+console.log('Built dist/cli.js and dist/plugin/manifest.json');

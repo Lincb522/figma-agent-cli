@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" role="img" aria-label="图标构造网格"><g id="artwork">
+
+<g transform="translate(0 0)"><g id="mark" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+<path id="lens" d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z" fill="none" stroke="#234E3B"/>
+<path id="handle" d="M15.2 15.2l5 5" fill="none" stroke="#234E3B"/>
+</g></g>
+</g><g id="keylines" fill="none" stroke="#A3A0AA" stroke-width="0.1"><path opacity=".55" d="M0 8H24M8 0V24M0 12H24M12 0V24M0 16H24M16 0V24"/><path opacity=".65" d="M0 0 24 24M0 24 24 0"/><rect width="24" height="24"/><ellipse id="keyline-circle" cx="12" cy="12" rx="10" ry="10"/><ellipse id="keyline-inner-circle" cx="12" cy="12" rx="5" ry="5"/><rect id="keyline-square" x="3" y="3" width="18" height="18" rx="2"/><rect id="keyline-portrait" x="4" y="2" width="16" height="20" rx="2"/><rect id="keyline-landscape" x="2" y="4" width="20" height="16" rx="2"/></g></svg>

@@ -1,0 +1,18 @@
+{
+  "renderedWith": "Chrome",
+  "source": "Local SVG generation; no Figma or image_gen generation",
+  "evidence": [
+    {
+      "width": 320,
+      "scroll": 320,
+      "icons": 72,
+      "pathBounds": "passed"
+    },
+    {
+      "width": 1200,
+      "scroll": 1200,
+      "icons": 72,
+      "pathBounds": "passed"
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "definition": {
+    "name": "search",
+    "paths": [
+      {
+        "name": "lens",
+        "d": "M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Z"
+      },
+      {
+        "name": "handle",
+        "d": "M15.2 15.2l5 5"
+      }
+    ]
+  },
+  "options": {
+    "name": "search",
+    "kind": "ui",
+    "size": 24,
+    "plate": "none",
+    "padding": 0,
+    "radius": 6,
+    "stroke": 1.75,
+    "physicalStroke": 1.75,
+    "background": "#E5EEE8",
+    "foreground": "#234E3B",
+    "pathCount": 2
+  }
+}
