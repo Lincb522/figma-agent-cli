@@ -1,6 +1,8 @@
 ---
 name: figma-agent
-description: "通过本机 Figma Agent CLI 在已连接的 Figma 文件中设计或修改可编辑 UI、小图标、App Icon、Keyline 构造底板与布尔造型，支持先 image_gen 生图再复刻。用户要求在 Figma 中创建、修改或复刻设计，或明确调用 figma-agent 时使用。"
+description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板与布尔造型，支持先 image_gen 生图再复刻。用户要求在 Figma 中设计、修改或复刻，连接 Figma Agent，或明确调用 figma-agent 时使用。"
+metadata:
+  version: "0.4.1"
 ---
 
 # Figma Agent
@@ -31,6 +33,16 @@ node {{CLI_SHELL_PATH}} agent
 Then run `sessions` and `document`; inspect `selection` when the task refers to selected content. Invoke all commands as `node <absolute-cli-path> <command>`. Use `schema` for command arguments, node properties, and supported operations instead of guessing flags.
 
 Resolve the actual target from the live session and user request. Never reuse a remembered session or node ID. When several files are connected, supply `--session <actual-id>` for every operation targeting a file. Read relevant layers, fonts, styles, and variables before changing an existing design.
+
+## Check the local installation when connecting or updating
+
+Read the built CLI version with `node <absolute-cli-path> --help`. Use 0.4.1 or newer for persistent pairing with the embedded-panel startup fix. Read the package version only as source metadata; it does not establish which built CLI or plugin is running.
+
+When the user reports that their local copy is stale, resolve the actual development-plugin directory from their manifest path or Figma process metadata before updating it. Update the installed skill and the local runtime files in that installation, not just a remote repository or ZIP. Preserve `.figma-agent` and the manifest plugin ID so existing bindings survive. Rebuild using that project's normal build command when its sources have changed; a working installation does not need rebuilding for each design task.
+
+Figma's already-open plugin panel keeps running its loaded code. After replacing the plugin files, have the user close and reopen Figma Agent in the target file. Check the displayed panel/main-thread versions in connection diagnostics when available. Do not report a runtime upgrade from a source version or successful build alone. A plugin-only update does not require restarting the bridge. Restart the bridge only when its loaded server code needs updating and that restart is authorized.
+
+If connecting opens a blank panel, stop generating pairing codes. Check the built plugin version and loaded manifest first; 0.4.1 adds startup diagnostics and prevents the pairing form from navigating away when initialization fails. Ask for the first panel diagnostic or console error only if it is needed to continue diagnosis.
 
 ## Connect without repeated setup
 
