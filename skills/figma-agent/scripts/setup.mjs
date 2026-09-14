@@ -1,5 +1,5 @@
 import { execFile, spawn } from 'node:child_process';
-import { access, mkdir, mkdtemp, open, readFile, rename, rm } from 'node:fs/promises';
+import { access, mkdir, mkdtemp, open, readFile, realpath, rename, rm } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -35,7 +35,7 @@ export async function installTool(project, url = archiveURL) {
 
 async function sessions(project) {
   try {
-    const { stdout } = await cli(project, ['sessions'], 2500);
+    const { stdout } = await cli(project, ['sessions']);
     const result = JSON.parse(stdout);
     if (!result.ok || !Array.isArray(result.result)) throw new Error('连接状态格式无效。');
     return result;
@@ -129,7 +129,7 @@ export async function setup(args = process.argv.slice(2)) {
   return { project, ...bridge };
 }
 
-if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && await realpath(process.argv[1]) === fileURLToPath(import.meta.url)) {
   setup().catch(error => {
     // Child output may contain private project data; report only known installer errors.
     console.error(error.cmd ? '安装命令执行失败。请检查网络、Node.js 与目录权限；已有安装已保留。' : error.message);

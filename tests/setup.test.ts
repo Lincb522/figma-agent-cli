@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFile } from 'node:child_process';
-import { cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { promisify } from 'node:util';
@@ -108,4 +108,12 @@ test('failed startup reports a recovery path and releases its lock', async t => 
   await assert.rejects(ensureBridge(directory), /桥接启动失败.*bridge.log/);
   assert.ok(!(await readdir(resolve(directory, '.figma-agent'))).includes('setup.lock'));
   assert.match(await readFile(resolve(directory, '.figma-agent/bridge.log'), 'utf8'), /port occupied/);
+});
+
+
+test('setup entrypoint executes through a filesystem alias such as macOS temporary directories', async t => {
+  const directory = await temporary(t);
+  const alias = resolve(directory, 'setup-alias.mjs');
+  await symlink(resolve('skills/figma-agent/scripts/setup.mjs'), alias);
+  await assert.rejects(exec(process.execPath, [alias, '--project', directory]), (error: any) => /未覆盖/.test(error.stderr));
 });
