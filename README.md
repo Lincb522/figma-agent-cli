@@ -18,13 +18,15 @@
 
 [![Figma Agent 产品介绍 · 70 秒 · 小何配音](docs/showcase/intro-poster.jpg)](docs/showcase/figma-agent-intro.mp4)
 
-<p align="center"><a href="docs/showcase/figma-agent-intro.mp4">观看产品介绍 · 70 秒</a></p>
+<p align="center"><a href="docs/showcase/figma-agent-intro.mp4">观看产品介绍 · 70 秒 · Codex → Figma 同屏实录</a></p>
+
+<p align="center">封面：<a href="docs/showcase/cover-landscape.png">横版</a> · <a href="docs/showcase/cover-portrait.png">竖版</a></p>
 
 ## 初心
 
 试过 Figma MCP 和 Codex 自带的 Figma 插件，还是觉得不够顺手，也不够智能。想让 agent 帮我设计，结果经常要自己拆步骤、传信息、反复连接。
 
-所以自己做了一套 **CLI + Figma 插件 + Skill**。让 Codex 直接在画布里画界面、做图标、调整细节，再导出结果检查。换个对话，也能接着用。
+所以自己做了一套 **CLI + Figma 插件 + Skill**。让 Codex 调用 Figma 画界面、做图标、调整细节，再导出结果检查。换个对话，也能接着用。
 
 ## 开始使用
 
