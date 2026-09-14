@@ -1,8 +1,8 @@
 ---
 name: figma-agent
-description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板与布尔造型，支持先 image_gen 生图再复刻。用户要求在 Figma 中设计、修改或复刻，连接 Figma Agent，或明确调用 figma-agent 时使用。"
+description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板、布尔造型与原型交互动画，支持先 image_gen 生图再复刻。用户要求在 Figma 中设计、修改或复刻，连接 Figma Agent，添加点击、悬停、弹层、Smart Animate 或组件状态动画，或明确调用 figma-agent 时使用。"
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
 ---
 
 # Figma Agent
@@ -37,11 +37,11 @@ Resolve the actual target from the live session and user request. Never reuse a 
 
 ## Check the local installation when connecting or updating
 
-Read the built CLI version with `node <absolute-cli-path> --help`. Use 0.5.0 or newer for continuous reconnection; it includes persistent pairing and the embedded-panel startup fix. Read the package version only as source metadata; it does not establish which built CLI or plugin is running.
+Read the built CLI version with `node <absolute-cli-path> --help`. Use 0.6.0 or newer for continuous reconnection; it includes persistent pairing and the embedded-panel startup fix. Read the package version only as source metadata; it does not establish which built CLI or plugin is running.
 
 When the user reports that their local copy is stale, resolve the actual development-plugin directory from their manifest path or Figma process metadata before updating it. Update the installed skill and the local runtime files in that installation, not just a remote repository or ZIP. Preserve `.figma-agent` and the manifest plugin ID so existing bindings survive. Rebuild using that project's normal build command when its sources have changed; a working installation does not need rebuilding for each design task.
 
-Figma's already-open plugin panel keeps running its loaded code. After replacing the plugin files, have the user close and reopen Figma Agent in the target file. Check the displayed panel/main-thread versions in connection diagnostics when available. Do not report a runtime upgrade from a source version or successful build alone. A plugin-only update does not require restarting the bridge. Restart the bridge only when its loaded server code needs updating and that restart is authorized.
+Figma's already-open plugin panel keeps running its loaded code. After replacing the plugin files, have the user close and reopen Figma Agent in the target file. Check the displayed panel/main-thread versions in connection diagnostics when available. Do not report a runtime upgrade from a source version or successful build alone. A plugin-only update does not require restarting the bridge. Version 0.6.0 adds prototype-get/prototype-set to the protocol: a bridge started before this update must be restarted once to accept these commands, and the plugin must be reopened. Do not repeatedly retry INVALID_METHOD against that old process. Restart the bridge only when its loaded server code needs updating and that restart is authorized.
 
 If connecting opens a blank panel, stop generating pairing codes. Check the built plugin version and loaded manifest first; 0.4.1 adds startup diagnostics and prevents the pairing form from navigating away when initialization fails. Ask for the first panel diagnostic or console error only if it is needed to continue diagnosis.
 
@@ -62,6 +62,7 @@ After binding, continue the requested design and verify the current document. Ke
 Use the installed `agent` guide as the maintained command reference. Execute the requested design, rather than returning instructions for the user to type commands.
 
 - **UI:** Create and edit native frames, text, components, and layout. Use `apply` for new node trees, `patch` for focused edits, and `exec` for advanced Plugin API work. Preserve the existing file's design language and unrelated content.
+- **Interactive animation:** Use `prototype get` to inspect existing reactions, then `prototype set <id> <json>` to replace the node’s Reaction[] while preserving unrelated interactions. `prototype clear` removes all reactions. Use `schema.prototype` for supported triggers/actions, transitions and spring/cubic-bezier easing. Times are seconds, so 300 ms is `0.3`; instant transitions use `null`. Use `actions[]`, never deprecated `action`. For advanced variable/conditional actions outside the dedicated schema, preserve them through native `setReactionsAsync` in `exec` rather than dropping them. Build matching named layers across animation states. For interactive controls, create main component variants in one component set using `figma.combineAsVariants`, connect them with CHANGE_TO, and place an instance in the preview frame. `h.prototype(id, reactions)` is available inside `exec`. Read `<project>/docs/PROTOTYPES.md` and `<project>/examples/interactive-toggle.js` when creating a first interactive component. Select the preview frame and guide the user to Figma Present; verify both forward and return interactions, interruption, and hover/pressed states where applicable. Reading stored reactions and exporting PNGs do not prove animation playback. Do not call a static preview a tested interaction or promise GIF/video export.
 - **Icons:** Support both small UI icons and App Icons. The user's Keyline “底板” is a geometry construction grid, distinct from a colored icon background. Keep locked Guides separate from editable Artwork. Use native boolean operands or vector paths for the mark; never consume guide nodes as boolean inputs. Use the guide's `icon`, `boolean`, and clean Artwork export workflow.
 - **Image-first reconstruction:** When requested, use `design prepare` and `design generate` to obtain the host `image_gen` request, actually call that tool, inspect its returned image, and accept the actual PNG with its generation receipt. `design generate` alone does not generate an image. Reconstruct native text, controls, layout, and vector/boolean icon shapes; retain raster assets where appropriate. Use `design apply` and `design capture` to produce a real Figma render and comparison. For a supplied image, use `design import`. If the host image tool is unavailable, report that fact rather than presenting a placeholder as generated output.
 

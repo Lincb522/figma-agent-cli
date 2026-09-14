@@ -1,7 +1,7 @@
 export const PORT = 38471;
 export const VERSION = 1;
 export const MAX_BODY = 24 * 1024 * 1024;
-export const METHODS = ['document', 'selection', 'inspect', 'find', 'fonts', 'apply', 'patch', 'delete', 'select', 'export', 'image', 'variables', 'styles', 'boolean', 'boolean-set', 'audit', 'icon-shape', 'eval'] as const;
+export const METHODS = ['document', 'selection', 'inspect', 'find', 'fonts', 'apply', 'patch', 'delete', 'select', 'export', 'image', 'variables', 'styles', 'boolean', 'boolean-set', 'audit', 'icon-shape', 'prototype-get', 'prototype-set', 'eval'] as const;
 export type Method = typeof METHODS[number];
 export interface Command { id: string; method: Method; params: Record<string, any>; timeoutMs: number }
 export interface Fault { code: string; message: string; recovery?: string; details?: unknown }

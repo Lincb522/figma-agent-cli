@@ -61,7 +61,7 @@ npm run skill:install
 npm run skill:install -- --update
 ```
 
-替换插件文件后，在 Figma 中关闭并重新打开插件。保留项目的 `.figma-agent` 目录，以保留绑定。
+替换插件文件后，在 Figma 中关闭并重新打开插件。升级到 0.6.0 时，还需重启一次本地桥接以识别新增的交互命令。保留项目的 `.figma-agent` 目录，以保留绑定。
 
 </details>
 
@@ -69,6 +69,7 @@ npm run skill:install -- --update
 
 - **界面设计**：从零画页面，或修改已选中的设计，保留可编辑文字、布局和组件。
 - **图标设计**：小图标、App Icon、Keyline 构造底板，用布尔运算合并、挖空和调整轮廓。
+- **交互动画**：点击、悬停、拖拽、页面跳转、弹层与组件状态切换，配置 Smart Animate、滑入和弹簧缓动，在 Figma 原型预览中操作。
 - **看图复刻**：直接给参考图，或先用 image_gen 生图，再在 Figma 中重建可编辑图层。生图需要当前 Codex 提供 image_gen 工具。
 
 ```text
@@ -81,6 +82,10 @@ $figma-agent 做一套相机 App 小图标，再做一个带构造底板的 App 
 
 ```text
 $figma-agent 先用 image_gen 生成一个播放器界面，再复刻到 Figma，文字、按钮和布局保持可编辑。
+```
+
+```text
+$figma-agent 给这个页面加交互：开关点击后用弹簧动画切换，卡片悬停抬起，点击详情从右侧滑入。
 ```
 
 ## 实际效果
@@ -99,4 +104,4 @@ $figma-agent 先用 image_gen 生成一个播放器界面，再复刻到 Figma�
 
 ---
 
-[CLI 用法](docs/CLI.md) · [图标设计](docs/ICONS.md) · [图片复刻](docs/IMAGEGEN.md) · [验证记录](docs/VERIFICATION.md) · [MIT License](LICENSE)
+[CLI 用法](docs/CLI.md) · [图标设计](docs/ICONS.md) · [交互动画](docs/PROTOTYPES.md) · [图片复刻](docs/IMAGEGEN.md) · [验证记录](docs/VERIFICATION.md) · [MIT License](LICENSE)

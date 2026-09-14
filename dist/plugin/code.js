@@ -6,7 +6,7 @@
 
   // src/protocol.ts
   var MAX_BODY = 24 * 1024 * 1024;
-  var METHODS = ["document", "selection", "inspect", "find", "fonts", "apply", "patch", "delete", "select", "export", "image", "variables", "styles", "boolean", "boolean-set", "audit", "icon-shape", "eval"];
+  var METHODS = ["document", "selection", "inspect", "find", "fonts", "apply", "patch", "delete", "select", "export", "image", "variables", "styles", "boolean", "boolean-set", "audit", "icon-shape", "prototype-get", "prototype-set", "eval"];
   var AgentError = class extends Error {
     constructor(code, message, recovery, details) {
       super(message);
@@ -424,6 +424,123 @@
     }
   }
 
+  // src/plugin/prototype.ts
+  var PROTOTYPE = {
+    triggers: ["ON_CLICK", "ON_HOVER", "ON_PRESS", "ON_DRAG", "AFTER_TIMEOUT", "MOUSE_ENTER", "MOUSE_LEAVE", "MOUSE_UP", "MOUSE_DOWN"],
+    actions: ["NODE", "BACK", "CLOSE", "URL"],
+    navigation: ["NAVIGATE", "OVERLAY", "SWAP", "SCROLL_TO", "CHANGE_TO"],
+    transitions: ["DISSOLVE", "SMART_ANIMATE", "SCROLL_ANIMATE", "MOVE_IN", "MOVE_OUT", "PUSH", "SLIDE_IN", "SLIDE_OUT"],
+    easing: ["LINEAR", "EASE_IN", "EASE_OUT", "EASE_IN_AND_OUT", "EASE_IN_BACK", "EASE_OUT_BACK", "EASE_IN_AND_OUT_BACK", "GENTLE", "QUICK", "BOUNCY", "SLOW", "CUSTOM_CUBIC_BEZIER", "CUSTOM_SPRING"],
+    timeUnit: "seconds",
+    instant: "transition: null",
+    set: "Replaces all reactions on this node. Read first and preserve unrelated reactions."
+  };
+  function invalid(message) {
+    throw new AgentError("INVALID_PROTOTYPE", message, "Run figma-agent schema and inspect the node before changing its interactions.");
+  }
+  function object(value, label) {
+    if (!value || typeof value !== "object" || Array.isArray(value)) invalid(`${label} must be an object.`);
+  }
+  function choice(value, choices, label) {
+    if (!choices.includes(value)) invalid(`${label} must be one of ${choices.join(", ")}.`);
+  }
+  function number(value, label, min = 0, max = Infinity) {
+    if (typeof value !== "number" || !Number.isFinite(value) || value < min || value > max) invalid(`${label} must be a finite number from ${min} to ${max}.`);
+  }
+  function pageOf2(node) {
+    let parent = node;
+    while (parent && parent.type !== "PAGE") parent = parent.parent;
+    return parent;
+  }
+  function ancestor(node, type) {
+    let parent = node;
+    while (parent && parent.type !== type) parent = parent.parent;
+    return parent;
+  }
+  async function interactiveNode(api, id) {
+    const node = await getNode(api, id);
+    if (!("setReactionsAsync" in node)) throw new AgentError("NOT_INTERACTIVE", "This node does not support prototype reactions. Choose a scene node.");
+    return node;
+  }
+  function transition(value) {
+    if (value === null) return;
+    object(value, "transition");
+    choice(value.type, PROTOTYPE.transitions, "transition.type");
+    number(value.duration, "transition.duration (seconds)", 0, 10);
+    if (["MOVE_IN", "MOVE_OUT", "PUSH", "SLIDE_IN", "SLIDE_OUT"].includes(value.type)) {
+      choice(value.direction, ["LEFT", "RIGHT", "TOP", "BOTTOM"], "transition.direction");
+      if (typeof value.matchLayers !== "boolean") invalid("Directional transitions require boolean matchLayers.");
+    }
+    object(value.easing, "easing");
+    choice(value.easing.type, PROTOTYPE.easing, "easing.type");
+    if (value.easing.type === "CUSTOM_CUBIC_BEZIER") {
+      const curve = value.easing.easingFunctionCubicBezier;
+      object(curve, "easingFunctionCubicBezier");
+      for (const key of ["x1", "x2"]) number(curve[key], key, 0, 1);
+      for (const key of ["y1", "y2"]) number(curve[key], key, -Infinity);
+    }
+    if (value.easing.type === "CUSTOM_SPRING") {
+      const spring = value.easing.easingFunctionSpring;
+      object(spring, "easingFunctionSpring");
+      for (const key of ["mass", "stiffness", "damping"]) {
+        number(spring[key], key);
+        if (spring[key] === 0) invalid(`${key} must be positive.`);
+      }
+      number(spring.initialVelocity, "initialVelocity", -Infinity);
+    }
+  }
+  async function getPrototype(api, id) {
+    const node = await interactiveNode(api, id);
+    const reactions = JSON.parse(JSON.stringify(node.reactions)).map((reaction) => {
+      if (!reaction.actions && reaction.action) reaction.actions = [reaction.action];
+      delete reaction.action;
+      return reaction;
+    });
+    return { id: node.id, name: node.name, reactions };
+  }
+  async function setPrototype(api, id, input) {
+    const node = await interactiveNode(api, id);
+    if (!Array.isArray(input) || input.length > 100) invalid("reactions must be an array with at most 100 entries; [] clears interactions.");
+    for (const reaction of input) {
+      object(reaction, "reaction");
+      object(reaction.trigger, "trigger");
+      choice(reaction.trigger.type, PROTOTYPE.triggers, "trigger.type");
+      if ("action" in reaction) invalid("Use actions[], not the deprecated action field.");
+      const trigger = reaction.trigger;
+      if (trigger.type === "AFTER_TIMEOUT") number(trigger.timeout, "trigger.timeout (seconds)", 1e-3);
+      if (trigger.type.startsWith("MOUSE_")) number(trigger.delay, "trigger.delay (seconds)");
+      if (["MOUSE_ENTER", "MOUSE_LEAVE"].includes(trigger.type) && typeof trigger.deprecatedVersion !== "boolean") invalid("Mouse enter/leave triggers require deprecatedVersion: false.");
+      if (!Array.isArray(reaction.actions) || !reaction.actions.length) invalid("Each reaction needs a non-empty actions array.");
+      for (const action of reaction.actions) {
+        object(action, "action");
+        choice(action.type, PROTOTYPE.actions, "action.type");
+        if (action.type === "URL") {
+          if (typeof action.url !== "string" || !/^https?:\/\/[^\s]+$/.test(action.url)) invalid("URL actions require an http(s) URL.");
+        }
+        if (action.type !== "NODE") continue;
+        choice(action.navigation, PROTOTYPE.navigation, "navigation");
+        transition(action.transition);
+        if (typeof action.destinationId !== "string" || !action.destinationId) invalid("NODE actions require a destinationId.");
+        const destination = await getNode(api, action.destinationId);
+        if (pageOf2(destination) !== pageOf2(node) || destination.type === "PAGE") invalid("Interaction destinations must be scene nodes on the same page.");
+        if (action.navigation === "CHANGE_TO") {
+          const component = ancestor(node, "COMPONENT");
+          if (!component || component.parent?.type !== "COMPONENT_SET" || destination.type !== "COMPONENT" || destination.parent !== component.parent) invalid("CHANGE_TO must connect variants within the same component set. Configure the main component or its children.");
+        } else if (action.navigation === "SCROLL_TO") {
+          let frame = node;
+          while (frame && !(frame.type === "FRAME" && isInside(destination, frame))) frame = frame.parent;
+          if (!frame) invalid("SCROLL_TO requires a destination in the source frame.");
+        } else if (!["FRAME", "COMPONENT", "INSTANCE"].includes(destination.type)) invalid("Navigation and overlays require a frame, component or instance destination.");
+      }
+    }
+    await node.setReactionsAsync(JSON.parse(JSON.stringify(input)));
+    return getPrototype(api, id);
+  }
+  function isInside(node, parent) {
+    for (let n = node; n; n = n.parent) if (n === parent) return true;
+    return false;
+  }
+
   // src/plugin/audit.ts
   async function audit(api, id) {
     const root = await getNode(api, id);
@@ -471,6 +588,7 @@
   }
   function helpers(api) {
     return {
+      prototype: (id, reactions) => setPrototype(api, id, reactions),
       solid,
       node: (id) => getNode(api, id),
       inspect: (node, depth = 2) => inspectNode(node, depth),
@@ -483,6 +601,10 @@
   async function execute(api, command) {
     const p = command.params;
     switch (command.method) {
+      case "prototype-get":
+        return getPrototype(api, p.id);
+      case "prototype-set":
+        return setPrototype(api, p.id, p.reactions);
       case "icon-shape":
         return shapeFromKeyline(api, p.id, p.shape, p.color, p.name);
       case "boolean":
@@ -548,9 +670,9 @@
         if (!Array.isArray(p.ids)) throw new AgentError("NODE_REQUIRED", "ids must be an array.");
         const nodes = await Promise.all(p.ids.map((id) => getNode(api, id)));
         for (const n of nodes) {
-          let ancestor = n;
-          while (ancestor && ancestor.type !== "PAGE") ancestor = ancestor.parent;
-          if (ancestor !== api.currentPage || n.type === "PAGE") throw new AgentError("WRONG_PAGE", "All selected nodes must be on the current page.");
+          let ancestor2 = n;
+          while (ancestor2 && ancestor2.type !== "PAGE") ancestor2 = ancestor2.parent;
+          if (ancestor2 !== api.currentPage || n.type === "PAGE") throw new AgentError("WRONG_PAGE", "All selected nodes must be on the current page.");
         }
         api.currentPage.selection = nodes;
         if (nodes.length) api.viewport.scrollAndZoomIntoView(nodes);
@@ -654,7 +776,7 @@ ${p.code}
         if (busy) throw new Error("The previous command is still running.");
         busy = true;
         ownsBusy = true;
-        const isMutation = ["apply", "patch", "delete", "image", "boolean", "boolean-set", "icon-shape", "eval"].includes(command.method);
+        const isMutation = ["apply", "patch", "delete", "image", "boolean", "boolean-set", "icon-shape", "prototype-set", "eval"].includes(command.method);
         if (isMutation) figma.commitUndo();
         try {
           const result = await execute(figma, command);
@@ -676,7 +798,7 @@ ${p.code}
       figma.ui.postMessage({ type: "result", reply });
       context();
     };
-    figma.ui.postMessage({ type: "runtime-ready", version: "0.5.0" });
+    figma.ui.postMessage({ type: "runtime-ready", version: "0.6.0" });
     context();
   }
   try {
@@ -684,6 +806,6 @@ ${p.code}
   } catch (error) {
     const failure = fault(error);
     console.error("[Figma Agent] Initialization failed:", failure.message);
-    figma.ui.postMessage({ type: "runtime-error", version: "0.5.0", error: failure });
+    figma.ui.postMessage({ type: "runtime-error", version: "0.6.0", error: failure });
   }
 })();

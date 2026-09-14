@@ -3,12 +3,14 @@ import { applyDesign, getNode, inspectNode, loadFonts, patchNode, solid, type No
 import { booleanSet, geometry, type GeometryRequest } from './geometry.js';
 import { shapeFromKeyline } from './keylines.js';
 import { artworkOf } from './node-roles.js';
+import { getPrototype, setPrototype } from './prototype.js';
 import { audit } from './audit.js';
 
 export function getContext(api: PluginAPI): Context { return { document: api.root.name, page: api.currentPage.name, pageId: api.currentPage.id, selection: api.currentPage.selection.map(n => ({ id: n.id, name: n.name, type: n.type })) }; }
 function integer(value: any, fallback: number, min: number, max: number) { if (value === undefined) return fallback; if (!Number.isInteger(value) || value < min || value > max) throw new AgentError('INVALID_NUMBER', `Expected an integer from ${min} to ${max}.`); return value; }
 export function helpers(api: PluginAPI) {
   return {
+    prototype: (id: string, reactions: unknown) => setPrototype(api, id, reactions),
     solid,
     node: (id: string) => getNode(api, id),
     inspect: (node: BaseNode, depth = 2) => inspectNode(node, depth),
@@ -21,6 +23,8 @@ export function helpers(api: PluginAPI) {
 export async function execute(api: PluginAPI, command: Command): Promise<any> {
   const p = command.params;
   switch (command.method) {
+    case 'prototype-get': return getPrototype(api, p.id);
+    case 'prototype-set': return setPrototype(api, p.id, p.reactions);
     case 'icon-shape': return shapeFromKeyline(api,p.id,p.shape,p.color,p.name);
     case 'boolean': return geometry(api, p as GeometryRequest);
     case 'boolean-set': return booleanSet(api, p.id, p.operation);

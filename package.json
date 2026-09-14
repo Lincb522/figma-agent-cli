@@ -1,6 +1,6 @@
 {
   "name": "figma-agent-cli",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A local Figma plugin and CLI for agent-driven editable UI design",
   "private": true,
   "type": "module",

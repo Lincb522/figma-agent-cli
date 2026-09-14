@@ -1,6 +1,6 @@
 interface:
   display_name: "Figma Agent"
-  short_description: "自动检查本地 Figma 连接与配对，设计 UI、图标和图片复刻"
+  short_description: "自动检查本地 Figma 连接与配对，设计 UI、图标、交互动画和图片复刻"
   default_prompt: "使用 $figma-agent 检查本机 Figma 连接，需要绑定时帮我获取配对码，然后完成我的设计需求并导出检查。"
 policy:
   allow_implicit_invocation: true

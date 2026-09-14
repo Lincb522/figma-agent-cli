@@ -27,7 +27,7 @@ test('tool download installs prebuilt files, reuses them, and preserves incomple
   await exec('tar', ['-czf', archive, '-C', resolve(directory, 'archive-source'), 'repo']);
   const target = resolve(directory, "User's tool $with spaces");
   assert.equal(await installTool(target, pathToFileURL(archive).href), true);
-  assert.match((await exec(process.execPath, [resolve(target, 'dist/cli.js'), '--help'])).stdout, /Figma Agent CLI 0.5.0/);
+  assert.match((await exec(process.execPath, [resolve(target, 'dist/cli.js'), '--help'])).stdout, /Figma Agent CLI 0.6.0/);
   assert.equal(await installTool(target, 'https://invalid.invalid/unused'), false);
   const incomplete = resolve(directory, 'existing-project');
   await mkdir(incomplete);

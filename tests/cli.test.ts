@@ -43,6 +43,13 @@ test('built CLI creates, retries once, executes, and exports through the real br
   const circle=JSON.parse((await drive(['icon','shape',board.workbench,'circle'])).stdout).result;
   const inner=JSON.parse((await drive(['icon','shape',board.workbench,'inner-circle'])).stdout).result;
   const ring=JSON.parse((await drive(['boolean','subtract',circle.id,inner.id])).stdout).result;assert.equal(ring.type,'BOOLEAN_OPERATION');
+  const hotspot=f.nodes.get(id); hotspot.reactions=[];
+  hotspot.setReactionsAsync=async (value:any)=>{hotspot.reactions=structuredClone(value);};
+  const reactionsPath=resolve(dir,'reactions.json');
+  await writeFile(reactionsPath,JSON.stringify([{trigger:{type:'ON_CLICK'},actions:[{type:'BACK'}]}]));
+  const prototype=await drive(['prototype','set',id,reactionsPath]); assert.equal(prototype.code,0); assert.equal(JSON.parse(prototype.stdout).result.reactions.length,1);
+  assert.equal(JSON.parse((await drive(['prototype','get',id])).stdout).result.reactions[0].actions[0].type,'BACK');
+  assert.equal(JSON.parse((await drive(['prototype','clear',id])).stdout).result.reactions.length,0);
   const schema=JSON.parse((await cli(['schema'])).stdout);assert.ok(schema.nodeTypes.includes('BOOLEAN'));assert.ok(schema.nodeTypes.includes('IMAGE'));assert.ok(schema.icon.names.includes('search'));
   const brief=resolve(dir,'brief.txt'),job=resolve(dir,'generated-job');await writeFile(brief,'An app icon for the synthetic CLI handoff test');
   assert.equal((await cli(['design','prepare',brief,'--kind','appicon','--dir',job])).code,0);

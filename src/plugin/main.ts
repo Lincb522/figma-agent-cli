@@ -46,7 +46,7 @@ function start() {
       }
       if (busy) throw new Error('The previous command is still running.');
       busy = true; ownsBusy = true;
-      const isMutation = ['apply', 'patch', 'delete', 'image', 'boolean', 'boolean-set', 'icon-shape', 'eval'].includes(command.method);
+      const isMutation = ['apply', 'patch', 'delete', 'image', 'boolean', 'boolean-set', 'icon-shape', 'prototype-set', 'eval'].includes(command.method);
       if (isMutation) figma.commitUndo();
       try {
         const result = await execute(figma, command);

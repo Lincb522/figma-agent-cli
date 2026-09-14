@@ -221,3 +221,7 @@ npm run test:ui
 - [完整 Plugin API](https://developers.figma.com/docs/plugins/api/figma/)
 
 此包是本地开发插件，尚未提交或发布到 Figma Community。
+
+## 原型交互动画
+
+`prototype get <id>` 读取交互；`prototype set <id> <reactions.json>` 替换该节点全部交互；`prototype clear <id>` 清除交互。支持原生触发器、页面跳转、弹层、组件状态切换和动画缓动，具体字段用 `schema` 查询。配置和可运行示例见 [交互动画](PROTOTYPES.md)。

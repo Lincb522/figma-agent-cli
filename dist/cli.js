@@ -3154,7 +3154,7 @@ import { fileURLToPath } from "node:url";
 var PORT = 38471;
 var VERSION = 1;
 var MAX_BODY = 24 * 1024 * 1024;
-var METHODS = ["document", "selection", "inspect", "find", "fonts", "apply", "patch", "delete", "select", "export", "image", "variables", "styles", "boolean", "boolean-set", "audit", "icon-shape", "eval"];
+var METHODS = ["document", "selection", "inspect", "find", "fonts", "apply", "patch", "delete", "select", "export", "image", "variables", "styles", "boolean", "boolean-set", "audit", "icon-shape", "prototype-get", "prototype-set", "eval"];
 var AgentError = class extends Error {
   constructor(code, message, recovery, details) {
     super(message);
@@ -3618,6 +3618,18 @@ var ARTWORK_TAG = "icon-artwork-v1";
 
 // src/plugin/geometry.ts
 var BOOLEAN_OPERATIONS = ["union", "subtract", "intersect", "exclude"];
+
+// src/plugin/prototype.ts
+var PROTOTYPE = {
+  triggers: ["ON_CLICK", "ON_HOVER", "ON_PRESS", "ON_DRAG", "AFTER_TIMEOUT", "MOUSE_ENTER", "MOUSE_LEAVE", "MOUSE_UP", "MOUSE_DOWN"],
+  actions: ["NODE", "BACK", "CLOSE", "URL"],
+  navigation: ["NAVIGATE", "OVERLAY", "SWAP", "SCROLL_TO", "CHANGE_TO"],
+  transitions: ["DISSOLVE", "SMART_ANIMATE", "SCROLL_ANIMATE", "MOVE_IN", "MOVE_OUT", "PUSH", "SLIDE_IN", "SLIDE_OUT"],
+  easing: ["LINEAR", "EASE_IN", "EASE_OUT", "EASE_IN_AND_OUT", "EASE_IN_BACK", "EASE_OUT_BACK", "EASE_IN_AND_OUT_BACK", "GENTLE", "QUICK", "BOUNCY", "SLOW", "CUSTOM_CUBIC_BEZIER", "CUSTOM_SPRING"],
+  timeUnit: "seconds",
+  instant: "transition: null",
+  set: "Replaces all reactions on this node. Read first and preserve unrelated reactions."
+};
 
 // src/workflow/icons.ts
 var import_svgpath = __toESM(require_svgpath2(), 1);
@@ -4111,7 +4123,7 @@ async function compareReference(directory, renderPath) {
 
 // src/cli/main.ts
 var root = resolve5(dirname5(fileURLToPath(import.meta.url)), "..");
-var usage = `Figma Agent CLI 0.5.0
+var usage = `Figma Agent CLI 0.6.0
 
 Usage: figma-agent <command> [arguments] [options]
 
@@ -4149,6 +4161,9 @@ Usage: figma-agent <command> [arguments] [options]
   design compare <job> <render.png> Compare an external PNG without claiming Figma provenance
   design status <job>             Read persistent image-to-design progress
   request <request-id>            Check a pending or completed command
+  prototype get <id>             Read native prototype interactions
+  prototype set <id> <json>       Replace interactions using a Reaction[] file
+  prototype clear <id>            Remove all interactions from the node
   schema                         Print the machine-readable command reference
   agent                          Print the agent workflow guide
 
@@ -4196,6 +4211,8 @@ Use node "${resolve5(root, "dist/cli.js")}" <command> from any directory.
 5. Use patch for focused edits. exec exposes the full Figma Plugin API for variants, variables, component instances, vectors, constraints, prototypes, and advanced layout.
 6. Use export <frame-id> --out preview.png. Open that ACTUAL image with your image-viewing tool; check hierarchy, alignment, clipping, text, spacing, and narrow/wide variants. Adjust and export again where needed.
 7. Report the created node IDs, exported image paths, and any Figma runtime limitations honestly.
+
+For interactive prototypes, use prototype get <node-id> before edits and prototype set <node-id> <reactions.json> to replace its native Reaction[]; retain unrelated interactions. prototype clear removes all interactions from one node. Use actions[] (not deprecated action). Times are seconds (0.3 = 300 ms), instant transitions use null. schema.prototype lists triggers, navigation, animation and easing options. Build matching named layers for SMART_ANIMATE. For CHANGE_TO create main component variants in one component set via exec and figma.combineAsVariants; place an instance in a frame for preview. h.prototype(id, reactions) uses the same validated setter from exec. See examples/interactive-toggle.js for a complete editable example. Read reactions back after setting; select the preview frame and use Figma Present to test clicks, hover, return paths and intermediate animation. A PNG export or stored reaction does not prove playback. Never replay an uncertain prototype write or demo creation.
 
 For custom shapes, use boolean union/subtract/intersect/exclude, flatten and outline. Subtract uses the FIRST ID as the base. Operations prepare clones first and replace originals only after a result exists; --keep-inputs preserves original nodes. Native boolean results retain editable operands. Use boolean set to change an existing operation. JSON apply supports nested BOOLEAN nodes with operation UNION/SUBTRACT/INTERSECT/EXCLUDE and children in bottom-to-top order.
 
@@ -4365,10 +4382,11 @@ async function main() {
       properties: PROPERTIES,
       spec: { parentId: "optional node ID", nodes: [{ key: "screen", type: "FRAME", props: { name: "Screen", width: 390, height: 844 }, children: [{ type: "TEXT", props: { characters: "Hello", fontName: { family: "Inter", style: "Regular" }, fontSize: 24 } }] }] },
       boolean: { operations: [...BOOLEAN_OPERATIONS, "flatten", "outline"], params: { operation: "lowercase operation", ids: ["base ID", "cutter ID"], parentId: "required for different parents", keepInputs: false, name: "optional" }, declarative: { type: "BOOLEAN", operation: "UNION | SUBTRACT | INTERSECT | EXCLUDE", children: "two or more NodeSpecs in bottom-to-top order" }, set: { id: "live BOOLEAN_OPERATION node", operation: BOOLEAN_OPERATIONS } },
+      prototype: PROTOTYPE,
       image: { type: "IMAGE", imagePath: "relative PNG/JPG/GIF inside layout directory; CLI hydrates bytes", imageBase64: "alternative inline bytes" },
       icon: { keylineShapes: KEYLINE_SHAPES, keylines: { create: "icon grid --dir <new-directory> --size 1024", operand: "icon shape <workbench-id> <shape>", cleanExport: "export <workbench-id> --out icon.png", constructionExport: "export <workbench-id> --with-guides --out construction.png" }, commands: ["icon list", "icon grid", "icon shape", "icon build <name|mark.json> --dir <new-directory>", "icon apply <name|mark.json>"], names: Object.keys(ICONS), kinds: ["ui", "app"], plates: ["rounded", "circle", "square", "none"], custom: { name: "Custom mark", paths: [{ name: "mark", d: "M4 12h16", fill: false }] }, coordinates: "24 \xD7 24 source grid", outputs: ["icon.svg", "construction.svg", "figma.json", "icon.json", "preview.html"] },
       design: { commands: ["prepare", "generate", "accept", "import", "apply", "recover", "capture", "compare", "status"], kinds: ["ui", "icon", "appicon"], generation: { tool: "image_gen", execution: "host-agent-tool", handoffProtocol: "figma-agent-imagegen-v1", providerRequired: false, accept: "design accept <job> <output.png> --generation-id <id> --result-ref <tool-result>", provenance: "Agent-reported tool result; local image bytes are validated and hashed" }, persistence: "job.json plus exclusive process lock", verification: "live export and editability audit; pixel metrics do not establish visual fidelity" },
-      exec: { bindings: ["figma", "h", "args"], code: "Async function body. Return plain JSON.", helpers: ["solid(hex)", "node(id)", "inspect(node,depth)", "loadFonts(textNode,font?)", "apply(nodes,parentId?)", "patch(id,props)", "boolean({operation,ids,parentId?,keepInputs?,name?})"] },
+      exec: { bindings: ["figma", "h", "args"], code: "Async function body. Return plain JSON.", helpers: ["prototype(id,reactions)", "solid(hex)", "node(id)", "inspect(node,depth)", "loadFonts(textNode,font?)", "apply(nodes,parentId?)", "patch(id,props)", "boolean({operation,ids,parentId?,keepInputs?,name?})"] },
       errors: { EXECUTION_UNCERTAIN: "Query request <id> before rerunning.", QUEUE_TIMEOUT: "The command did not run.", NO_SESSION: "Pair the plugin.", AMBIGUOUS_SESSION: "Pass --session.", GENERATION_ALREADY_STARTED: "Inspect the original image_gen tool call; never automatically regenerate.", GENERATION_ID_MISMATCH: "Use the generation ID from this job.", JOB_BUSY: "Another process owns this job.", WRONG_RECONSTRUCTION: "Choose the Figma file containing the matching job tag." }
     });
     return;
@@ -4438,6 +4456,13 @@ Keep this terminal and the Figma plugin open.`);
   let method;
   let params = {};
   switch (command) {
+    case "prototype": {
+      const action = required();
+      if (!["get", "set", "clear"].includes(action)) throw new AgentError("INVALID_PROTOTYPE_COMMAND", "Use prototype get, set, or clear.");
+      method = action === "get" ? "prototype-get" : "prototype-set";
+      params = { id: required(1), ...action === "get" ? {} : { reactions: action === "clear" ? [] : await json(required(2)) } };
+      break;
+    }
     case "icon": {
       if (required() === "shape") {
         method = "icon-shape";
