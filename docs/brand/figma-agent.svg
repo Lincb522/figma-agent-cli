@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Figma Agent</title>
+  <rect id="base" width="64" height="64" rx="16" fill="#216044"/>
+  <path id="canvas" d="M17 17H47V25H25V31H37V39H25V48H17V17Z" fill="#F4FFF8"/>
+  <path id="cursor" d="M39 36L54 43L46.5 46.5L43 54L36 39C35.1 37.1 37.1 35.1 39 36Z" fill="#ACEDC5"/>
+</svg>

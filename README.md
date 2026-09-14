@@ -1,14 +1,24 @@
 <div align="center">
 
+<img src="docs/brand/figma-agent.svg" width="96" height="96" alt="Figma Agent 图标" />
+
 # Figma Agent
 
 **在 Codex 里说需求，在 Figma 里得到可编辑的设计。**
+
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-417E38?style=flat-square&logo=nodedotjs&logoColor=white)
+![Figma Plugin API](https://img.shields.io/badge/Figma-Plugin_API-292929?style=flat-square&logo=figma&logoColor=white)
+![esbuild](https://img.shields.io/badge/esbuild-FFCF00?style=flat-square&logo=esbuild&logoColor=black)
+![MIT](https://img.shields.io/badge/License-MIT-216044?style=flat-square)
 
 [开始使用](#开始使用) · [实际效果](#实际效果) · [Skill](skills/figma-agent) · [MIT](LICENSE)
 
 </div>
 
-![左侧 image_gen 参考图，右侧 Figma 实际导出的复刻图](docs/showcase/grok-comparison.png)
+[![Figma Agent 产品介绍 · 70 秒 · 小何配音](docs/showcase/intro-poster.jpg)](docs/showcase/figma-agent-intro.mp4)
+
+<p align="center"><a href="docs/showcase/figma-agent-intro.mp4">观看产品介绍 · 70 秒</a></p>
 
 ## 初心
 
@@ -90,18 +100,18 @@ $figma-agent 给这个页面加交互：开关点击后用弹簧动画切换，�
 
 ## 实际效果
 
-上方图片来自一次实际操作：
+**STILL 摄影 App** 是用这套工具从空白页面完成的能力示例：先生成参考图，再在 Figma 中重建首页、作品详情和照片编辑页。文字、图片和控件保留为独立图层。
 
-> 生成一个 Grok 的图标，然后用 Figma 给我复刻出来。
+![STILL 摄影 App：Figma 实际导出的首页、详情和编辑页](docs/showcase/still-screens.png)
 
-左侧是 image_gen 生成的参考图，右侧是 **Figma 实际导出的复刻稿**，圆环、斜线和背景可以分别编辑。
+![STILL 的 21 个可编辑小图标](docs/showcase/still-icons.png)
 
-[查看 PNG](docs/showcase/grok-figma.png) · [查看 SVG](docs/showcase/grok.svg)
+<p align="center"><img src="docs/showcase/still-app-icon.png" width="280" alt="STILL App Icon，独立底板与可编辑矢量造型" /></p>
 
-<p align="center"><img src="docs/keyline-grid.png" width="360" alt="Keyline 构造底板，包含中心线、对角线、同心圆与圆角矩形" /></p>
+同时完成了图标设计、组件状态和原型交互配置。页面跳转、弹层与状态动画可继续在 Figma 中调整。
 
-图标的构造辅助线、主体和着色背景分开保留，方便继续调整，也能单独导出干净的图标。
+[查看页面](docs/showcase/still-screens.png) · [查看图标](docs/showcase/still-icons.png)
 
 ---
 
-[CLI 用法](docs/CLI.md) · [图标设计](docs/ICONS.md) · [交互动画](docs/PROTOTYPES.md) · [图片复刻](docs/IMAGEGEN.md) · [验证记录](docs/VERIFICATION.md) · [MIT License](LICENSE)
+[CLI 用法](docs/CLI.md) · [图标设计](docs/ICONS.md) · [交互动画](docs/PROTOTYPES.md) · [图片复刻](docs/IMAGEGEN.md) · [验证记录](docs/VERIFICATION.md) · 开发者 [zijiu522](https://github.com/Lincb522) · [MIT License](LICENSE)

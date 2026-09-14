@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title">
+  <title id="title">Figma Agent mark</title>
+  <path id="canvas" d="M12 10H48V20H22V28H36V38H22V50H12V10Z" fill="currentColor"/>
+  <path id="cursor" d="M40 36L57 44L48.5 48.5L44 57L36 40C34.9 37.6 37.6 34.9 40 36Z" fill="currentColor"/>
+</svg>
