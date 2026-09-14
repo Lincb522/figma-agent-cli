@@ -14,7 +14,7 @@ import { loadDesign } from '../workflow/images.js';
 import { prepareJob, importReference, requestGeneration, acceptGeneratedReference, readJob, applyReconstruction, recoverApplication, captureReconstruction, compareReference, type Transport } from '../workflow/jobs.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const usage = `Figma Agent CLI 0.4.1
+const usage = `Figma Agent CLI 0.4.2
 
 Usage: figma-agent <command> [arguments] [options]
 
@@ -92,7 +92,7 @@ const guide = `# Figma Agent workflow
 This CLI controls an OPEN Figma Design file through the paired development plugin.
 Use node "${resolve(root, 'dist/cli.js')}" <command> from any directory.
 
-1. Run sessions and document. Select an explicit --session when several files are open. Binding is saved per Figma client and reused across files; each file still needs the plugin running. If the bridge is stopped, start serve --quiet. If first-time binding is needed, run pair yourself and show the temporary six-digit code to the user. Do not read or show persistent credentials. Reopening the plugin or restarting the bridge restores a saved binding; never restart the bridge just to get a code.
+1. Run sessions and document. Select an explicit --session when several files are open. Binding is saved per Figma client and reused across files; each file still needs the plugin running. If the bridge is stopped, start serve --quiet. If first-time binding is needed, run pair yourself and show the temporary six-digit code to the user. Do not read or show persistent credentials. A remembered plugin keeps reconnecting after an unexpected outage, with retry delays capped at 15 seconds. Start the bridge if needed, then allow up to 30 seconds for recovery. Respect a manual disconnect or stopped reconnection; use the panel retry action only when the user requests it. Never restart the bridge just to get a code.
 2. Read selection, inspect, find, variables, styles and fonts before designing in an existing file.
 3. Establish the requested screens, widths, actual content and component system. Reuse the file's design language.
 4. Use apply for editable frame/component/text/shape trees. Save returned IDs and key mappings.

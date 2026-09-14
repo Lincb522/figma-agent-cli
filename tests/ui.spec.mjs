@@ -270,6 +270,7 @@ async function persistentFixture(page, mode = 'success', saved = true) {
     if (path === '/pair') state.pairs++;
     if (path === '/resume') {
       state.resumes++;
+      if (state.mode === 'hold-resume') await new Promise(resolve => { state.release = resolve; });
       if (state.mode === 'offline') return route.abort('connectionrefused');
       if (state.mode === 'revoked') return route.fulfill({ status: 401, headers, json: { ok: false, error: { code: 'AUTHORIZATION_REVOKED' } } });
     }
@@ -283,7 +284,9 @@ async function persistentFixture(page, mode = 'success', saved = true) {
     if (path === '/plugin/pause') state.paused.push(route.request().postDataJSON().paused);
     if (path === '/plugin/poll') {
       await new Promise(r => setTimeout(r, 100));
-      result = { ok: true, command: state.mode === 'uncertain' && !state.delivered++ ? { id: 'uncertain-once', method: 'apply', params: {}, timeoutMs: 1000 } : null };
+      const command = state.mode === 'uncertain' && !state.delivered ? { id: 'uncertain-once', method: 'apply', params: {}, timeoutMs: 1000 } : null;
+      if (command) state.delivered++;
+      result = { ok: true, command };
     }
     await route.fulfill({ headers, json: result }).catch(() => {});
   });
@@ -321,22 +324,58 @@ test('a panel startup error is visible and cannot navigate the pairing form to a
     await page.screenshot({ path: resolve(evidence, `plugin-ui-boot-error-${width}.png`), fullPage: true });
   }
 });
-test('saved binding retries offline with a finite limit and a keyboard reconnect action, without new pairing', async ({ page }) => {
+test('saved binding keeps retrying beyond six failures and automatically reconnects without new pairing', async ({ page }) => {
   await page.clock.install();
   const state = await persistentFixture(page, 'offline');
   await page.goto(url);
   await expect(frame(page).locator('#status')).toHaveText('正在恢复已保存的连接');
-  for (let n = 1; n <= 6; n++) {
-    await expect.poll(() => state.resumes).toBe(n);
-    await page.clock.fastForward(6500);
-  }
+  await expect(async () => {
+    await page.clock.fastForward(16_000);
+    expect(state.resumes).toBeGreaterThanOrEqual(10);
+  }).toPass({ timeout: 15_000, intervals: [100] });
   await expect(frame(page).getByRole('alert')).toContainText('无需新配对码');
   expect(state.pairs).toBe(0);
   for (const width of [260, 640]) { await page.setViewportSize({ width, height: 600 }); await noOverflow(page); }
   state.mode = 'success';
+  await expect(async () => {
+    await page.clock.fastForward(16_000);
+    await expect(frame(page).locator('#connected')).toBeVisible({ timeout: 500 });
+  }).toPass({ timeout: 10_000 });
+  expect(state.pairs).toBe(0);
+});
+test('stopping reconnect or manually disconnecting keeps the saved binding without reconnecting again', async ({ page }) => {
+  await page.clock.install(); const state = await persistentFixture(page, 'offline');
+  await page.goto(url);
+  await expect(frame(page).getByRole('alert')).toContainText('正在自动重连');
+  const stop = frame(page).getByRole('button', { name: '停止重连' });
+  await stop.focus(); await page.keyboard.press('Enter');
+  await expect(frame(page).getByRole('alert')).toContainText('自动重连已停止');
+  const stopped = state.resumes;
+  state.mode = 'success'; await page.clock.fastForward(60_000);
+  expect(state.resumes).toBe(stopped);
+  await expect(frame(page).locator('#pair-form')).toBeHidden();
   const retry = frame(page).getByRole('button', { name: '重试连接' });
   await retry.focus(); await page.keyboard.press('Enter');
-  await expect(frame(page).locator('#connected')).toBeVisible(); expect(state.pairs).toBe(0);
+  await expect(frame(page).locator('#connected')).toBeVisible();
+  await frame(page).getByRole('button', { name: '断开连接' }).click();
+  const disconnected = state.resumes; await page.clock.fastForward(60_000);
+  expect(state.resumes).toBe(disconnected); expect(state.pairs).toBe(0);
+  await expect(frame(page).locator('#remembered')).toBeVisible();
+});
+test('stopping an in-flight resume aborts it and a late response cannot replace the next connection', async ({ page }) => {
+  let aborted = 0;
+  page.on('requestfailed', request => { if (request.url().endsWith('/resume')) aborted++; });
+  const state = await persistentFixture(page, 'hold-resume');
+  await page.goto(url); await expect.poll(() => typeof state.release).toBe('function');
+  await frame(page).getByRole('button', { name: '停止重连' }).click();
+  await expect.poll(() => aborted).toBe(1);
+  await expect(frame(page).getByRole('alert')).toContainText('自动重连已停止');
+  state.mode = 'success';
+  await frame(page).getByRole('button', { name: '重试连接' }).click();
+  await expect(frame(page).locator('#connected')).toBeVisible();
+  state.release();
+  await expect(frame(page).locator('#status')).toHaveText('已连接，等待命令');
+  expect(state.resumes).toBe(2); expect(state.pairs).toBe(0);
 });
 test('revoked saved authorization returns to pairing and storage failure never claims persistence', async ({ page }) => {
   const state = await persistentFixture(page, 'revoked');
@@ -354,13 +393,14 @@ test('revoked saved authorization returns to pairing and storage failure never c
   await expect(frame(page).locator('#persistence')).toHaveText('此连接尚未持久化。');
   for (const width of [260, 640]) { await page.setViewportSize({ width, height: 600 }); await noOverflow(page); }
 });
-test('an uncertain mutation does not auto-resume or repeat document execution', async ({ page }) => {
+test('an uncertain mutation restores the connection with a notice and never repeats document execution', async ({ page }) => {
   const state = await persistentFixture(page, 'uncertain');
   await page.goto(url);
+  await expect.poll(() => state.resumes).toBe(2);
+  await expect(frame(page).locator('#connected')).toBeVisible();
   await expect(frame(page).getByRole('alert')).toContainText('不要重复发送该命令');
-  await expect(frame(page).locator('#remembered')).toBeVisible();
-  expect(state.resumes).toBe(1); expect(state.delivered).toBe(1); expect(state.pairs).toBe(0);
-  await expect(frame(page).locator('#activity li')).toHaveCount(2);
+  expect(state.delivered).toBe(1); expect(state.pairs).toBe(0);
+  await expect(frame(page).locator('#activity li').filter({ hasText: 'apply · 执行中' })).toHaveCount(1);
 });
 test('automatic recovery preserves a paused connection', async ({ page }) => {
   await page.clock.install(); const state = await persistentFixture(page);

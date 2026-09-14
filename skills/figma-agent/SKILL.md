@@ -2,7 +2,7 @@
 name: figma-agent
 description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板与布尔造型，支持先 image_gen 生图再复刻。用户要求在 Figma 中设计、修改或复刻，连接 Figma Agent，或明确调用 figma-agent 时使用。"
 metadata:
-  version: "0.4.1"
+  version: "0.4.2"
 ---
 
 # Figma Agent
@@ -36,7 +36,7 @@ Resolve the actual target from the live session and user request. Never reuse a 
 
 ## Check the local installation when connecting or updating
 
-Read the built CLI version with `node <absolute-cli-path> --help`. Use 0.4.1 or newer for persistent pairing with the embedded-panel startup fix. Read the package version only as source metadata; it does not establish which built CLI or plugin is running.
+Read the built CLI version with `node <absolute-cli-path> --help`. Use 0.4.2 or newer for continuous reconnection; it includes persistent pairing and the embedded-panel startup fix. Read the package version only as source metadata; it does not establish which built CLI or plugin is running.
 
 When the user reports that their local copy is stale, resolve the actual development-plugin directory from their manifest path or Figma process metadata before updating it. Update the installed skill and the local runtime files in that installation, not just a remote repository or ZIP. Preserve `.figma-agent` and the manifest plugin ID so existing bindings survive. Rebuild using that project's normal build command when its sources have changed; a working installation does not need rebuilding for each design task.
 
@@ -50,7 +50,7 @@ Preserve a running bridge. If `sessions` reports BRIDGE_NOT_RUNNING or BRIDGE_UN
 
 Binding is remembered on this Figma client and reused across files. Reopening the plugin or restarting the bridge restores authorization automatically. Each target file still needs Figma Agent running; files have separate sessions, even when their names match. Never merge or guess sessions by file name. Clearing Figma client storage, changing the plugin ID, or deleting the bridge authorization file requires a new binding.
 
-When no file is connected, ask the user to open Figma Agent in the target file; if the panel says it remembers the device, use its retry button after starting the bridge. Check `sessions` again. For first-time binding, an invalid saved binding, or an explicit request for a code, run `node <absolute-cli-path> pair` yourself and show the returned **one-time six-digit code** with its ten-minute validity. Tell the user to enter it in Figma Agent and click 连接. Do not tell them to restart the terminal to get a code. Only generate another code when the previous one expired or the user requests it.
+When no file is connected, ask the user to open Figma Agent in the target file. A remembered binding reconnects automatically while the plugin remains open, including after the bridge has been offline for a long time; no new pairing code is needed. Start the bridge if necessary, allow up to 30 seconds for automatic recovery, and check `sessions` again. Use 重试连接 only if the user stopped reconnection or manually disconnected. Preserve an explicit stop until the user requests reconnection. The plugin retains a paused state after recovery, and an uncertain mutation still requires document inspection before continuing. For first-time binding, an invalid saved binding, or an explicit request for a code, run `node <absolute-cli-path> pair` yourself and show the returned **one-time six-digit code** with its ten-minute validity. Tell the user to enter it in Figma Agent and click 连接. Do not tell them to restart the terminal to get a code. Only generate another code when the previous one expired or the user requests it.
 
 The user authorizes showing this temporary pairing code to complete binding. This does not authorize reading or displaying persistent credentials: never open `.figma-agent/session.json`, `.figma-agent/authorizations.json`, or dump Figma clientStorage. Let the CLI and plugin handle them normally. A `sessions` response without `persistentPairing: true` means the running bridge predates persistent binding; explain that a one-time bridge restart and plugin reload are needed after updating. Do not stop another task's active bridge without authorization.
 

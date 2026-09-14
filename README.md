@@ -57,7 +57,7 @@ npm start
 
 **3. 在 Figma 里连接**
 
-打开 **Plugins → Development → Import plugin from manifest…**，选择项目里的 `dist/plugin/manifest.json`。运行 **Figma Agent**，输入配对码，点击连接。**只需绑定一次**，以后重开插件、重启 CLI，或在其他设计稿打开插件，都会使用已保存的绑定。
+打开 **Plugins → Development → Import plugin from manifest…**，选择项目里的 `dist/plugin/manifest.json`。运行 **Figma Agent**，输入配对码，点击连接。**只需绑定一次**，以后重开插件、重启 CLI，或在其他设计稿打开插件，都会使用已保存的绑定。意外断线会自动重连，CLI 恢复后无需重新配对。
 
 从旧版升级：更新后重启一次 CLI、重新打开插件并配对，以保存首次绑定。保留项目的 `.figma-agent` 目录。
 

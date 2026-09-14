@@ -6,7 +6,8 @@ let token = '';
 let resumeToken = '';
 // getRandomValues also works in iframe contexts where randomUUID is unavailable.
 function messageId() { return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join(''); }
-const instanceId = messageId();
+let instanceId = messageId();
+const requests = new Set<AbortController>();
 let connecting = false;
 let resumePaused = false;
 const storageRequests = new Map<string, (message: any) => void>();
@@ -67,15 +68,22 @@ async function requireContext(): Promise<Context> {
   });
 }
 async function post(path: string, data: unknown, credential = token, timeout = 28_000): Promise<any> {
-  const response = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(credential ? { Authorization: `Bearer ${credential}` } : {}) }, body: JSON.stringify(data), signal: AbortSignal.timeout(timeout) });
-  const result = await response.json();
-  if (!response.ok || result.ok === false) throw new ConnectionError(result.error?.message ?? '本地 CLI 请求失败。', result.error?.code ?? 'CONNECTION_FAILED');
-  return result;
+  const controller = new AbortController(); requests.add(controller);
+  const timer = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(base + path, { method: 'POST', headers: { 'Content-Type': 'application/json', ...(credential ? { Authorization: `Bearer ${credential}` } : {}) }, body: JSON.stringify(data), signal: controller.signal });
+    const result = await response.json();
+    if (!response.ok || result.ok === false) throw new ConnectionError(result.error?.message ?? '本地 CLI 请求失败。', result.error?.code ?? 'CONNECTION_FAILED');
+    return result;
+  } finally { clearTimeout(timer); requests.delete(controller); }
 }
 function disconnected(message?: string) {
   generation++; token = ''; paused = false; executing = false; connecting = false;
+  pendingContext?.reject(new ConnectionError('连接已取消。', 'CANCELLED'));
+  for (const request of requests) request.abort();
   el('pair-form').hidden = !!resumeToken; el('connected').hidden = true;
   el('remembered').hidden = !resumeToken; el('forget').hidden = !resumeToken;
+  el('stop-reconnect').hidden = true;
   el<HTMLButtonElement>('retry').disabled = false; el<HTMLButtonElement>('forget').disabled = false;
   el<HTMLButtonElement>('connect').disabled = false;
   status(message ? '连接中断' : '未连接', message ? 'error' : 'disconnected');
@@ -88,24 +96,30 @@ async function activate(result: any, g: number, warning = '') {
   if (g !== generation) return;
   connecting = false;
   el<HTMLInputElement>('code').value = ''; el('pair-form').hidden = true; el('remembered').hidden = true; el('connected').hidden = false;
+  el('stop-reconnect').hidden = true;
   el('forget').hidden = !resumeToken; el<HTMLButtonElement>('forget').disabled = false;
   el('session').textContent = result.sessionId; el('pause').textContent = paused ? '继续接收' : '暂停接收'; el<HTMLButtonElement>('disconnect').disabled = false;
   el('persistence').textContent = resumeToken ? '已记住此设备。重开插件或切换文件后自动连接。' : '此连接尚未持久化。';
   status(paused ? '已暂停接收' : '已连接，等待命令', paused ? 'paused' : 'connected'); error(warning); log('已连接此文件');
   void heartbeat(g); void listen(g);
 }
-async function resume() {
+async function resume(retired: Promise<unknown> = Promise.resolve(), notice = '') {
   if (connecting || !resumeToken) return;
   connecting = true; const g = ++generation;
+  const attemptInstance = instanceId;
   el('pair-form').hidden = true; el('remembered').hidden = false;
+  el('stop-reconnect').hidden = false;
   el<HTMLButtonElement>('retry').disabled = true; el<HTMLButtonElement>('forget').disabled = true;
-  error();
-  for (let attempt = 0; attempt < 6 && g === generation; attempt++) {
+  error(notice);
+  status('正在恢复已保存的连接', 'connecting');
+  await retired;
+  for (let attempt = 0; g === generation && resumeToken; attempt++) {
     try {
       status(attempt ? '等待本地 CLI，正在重试' : '正在恢复已保存的连接', 'connecting');
       const current = await requireContext();
-      const result = await post('/resume', { context: current, instanceId }, resumeToken, 6000);
-      await activate(result, g); return;
+      const result = await post('/resume', { context: current, instanceId: attemptInstance }, resumeToken, 6000);
+      if (g !== generation) { void post('/plugin/disconnect', {}, result.token, 3000).catch(() => {}); return; }
+      await activate(result, g, notice); return;
     } catch (e) {
       if (g !== generation) return;
       if (e instanceof ConnectionError && e.code === 'AUTHORIZATION_REVOKED') {
@@ -114,22 +128,28 @@ async function resume() {
         disconnected('此设备的绑定已失效。让 Codex 获取新配对码，再填写一次即可。'); return;
       }
       if (e instanceof ConnectionError && ['CONTEXT_TIMEOUT', 'CONTEXT_FAILED', 'STARTUP_FAILED'].includes(e.code)) { disconnected(e.message); showDiagnostics(); return; }
-      if (attempt === 5) { disconnected('已保存绑定，但本地 CLI 暂时不可用。启动 CLI 后点击“重试连接”，无需新配对码。'); return; }
-      await delay(Math.min(500 * 2 ** attempt, 6000));
+      error('本地 CLI 暂时不可用，正在自动重连。启动 CLI 后会恢复，无需新配对码。');
+      await delay(Math.min(500 * 2 ** Math.min(attempt, 5), 15_000));
     }
   }
 }
 function connectionLost(message: string) {
   const uncertain = executing;
+  const notice = uncertain ? '命令可能已在 Figma 执行，结果未确认。请让 agent 检查画布后再继续；不要重复发送该命令。' : '';
+  const old = token;
   resumePaused = paused;
-  disconnected(uncertain ? '命令可能已在 Figma 执行，结果未确认。请让 agent 检查画布后再继续；不要重复发送该命令。' : message);
-  if (!uncertain && resumeToken) void resume();
+  instanceId = messageId();
+  disconnected(notice || message);
+  if (uncertain) log('上一条命令结果未确认，请检查画布');
+  // Retire the old poll/queue before another session can accept work for this panel.
+  const retired = old ? post('/plugin/disconnect', {}, old, 3000).catch(() => {}) : Promise.resolve();
+  if (resumeToken) void resume(retired, notice);
 }
 async function heartbeat(g: number) {
   while (g === generation && token) {
     send({ type: 'context' });
     try { await post('/plugin/heartbeat', { context }, token, 6000); }
-    catch (e) { if (g === generation && !executing && e instanceof ConnectionError && ['SESSION_GONE','UNAUTHORIZED'].includes(e.code)) { connectionLost('会话已结束，正在恢复连接。'); return; } }
+    catch { if (g === generation && !executing) { connectionLost('连接中断，正在自动恢复。'); return; } }
     await delay(10_000);
   }
 }
@@ -234,8 +254,9 @@ el('pause').addEventListener('click', async () => {
   } catch { error('暂停状态未能更新，请检查本地 CLI 连接。'); }
   finally { button.disabled = false; }
 });
-el('disconnect').addEventListener('click', async () => { const old = token; resumePaused = false; disconnected(); try { await post('/plugin/disconnect', {}, old, 3000); } catch { /* A disconnected session also expires on the bridge. */ } });
+el('disconnect').addEventListener('click', async () => { const old = token; resumePaused = false; instanceId = messageId(); disconnected(); try { await post('/plugin/disconnect', {}, old, 3000); } catch { /* A disconnected session also expires on the bridge. */ } });
 el('retry').addEventListener('click', () => { void resume(); });
+el('stop-reconnect').addEventListener('click', () => { const old = token; instanceId = messageId(); disconnected('自动重连已停止。点击“重试连接”可继续。'); if (old) void post('/plugin/disconnect', {}, old, 3000).catch(() => {}); });
 el('forget').addEventListener('click', async () => {
   disconnected(); connecting = true;
   el<HTMLButtonElement>('retry').disabled = true;
