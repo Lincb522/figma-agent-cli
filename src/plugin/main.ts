@@ -5,6 +5,7 @@ declare const __PLUGIN_VERSION__: string;
 figma.showUI(__html__, { width: 368, height: 540, themeColors: true });
 function start() {
   let busy = false;
+  const authorizationKey = 'figma-agent.authorization.v1';
   const replies = new Map<string, { fingerprint: string; reply: Reply }>();
   const context = () => {
     let message;
@@ -17,6 +18,19 @@ function start() {
   figma.ui.onmessage = async message => {
     if (!message || typeof message !== 'object') return;
     if (message.type === 'ready' || message.type === 'context') { context(); return; }
+    if (message.type === 'authorization' && typeof message.id === 'string') {
+      try {
+        let value: unknown;
+        if (message.operation === 'get') value = await figma.clientStorage.getAsync(authorizationKey);
+        else if (message.operation === 'set' && typeof message.value === 'string' && /^[a-f0-9]{64}$/.test(message.value)) await figma.clientStorage.setAsync(authorizationKey, message.value);
+        else if (message.operation === 'delete') await figma.clientStorage.deleteAsync(authorizationKey);
+        else throw new Error('Invalid authorization storage operation.');
+        figma.ui.postMessage({ type: 'authorization-result', id: message.id, ok: true, value });
+      } catch {
+        figma.ui.postMessage({ type: 'authorization-result', id: message.id, ok: false });
+      }
+      return;
+    }
     if (message.type !== 'command') return;
     const id = message.command?.id ?? '';
     let reply: Reply;

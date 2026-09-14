@@ -57,7 +57,9 @@ npm start
 
 **3. 在 Figma 里连接**
 
-打开 **Plugins → Development → Import plugin from manifest…**，选择项目里的 `dist/plugin/manifest.json`。运行 **Figma Agent**，输入终端中的配对码，点击连接。
+打开 **Plugins → Development → Import plugin from manifest…**，选择项目里的 `dist/plugin/manifest.json`。运行 **Figma Agent**，输入配对码，点击连接。**只需绑定一次**，以后重开插件、重启 CLI，或在其他设计稿打开插件，都会使用已保存的绑定。
+
+从旧版升级：更新后重启一次 CLI、重新打开插件并配对，以保存首次绑定。保留项目的 `.figma-agent` 目录。
 
 **4. 回到 Codex，直接说需求**
 
@@ -65,7 +67,9 @@ npm start
 $figma-agent 帮我设计一个音乐 App 首页，使用可编辑图层，完成后导出检查。
 ```
 
-Skill 会记住这份项目的位置，新对话不用重新贴路径。保持 Figma 文件、插件和终端打开即可。
+Skill 会记住项目位置，新对话不用重新贴路径。没有启动 CLI 时，它会帮你启动；需要绑定时，它会获取配对码并提示你在 Figma 填写。
+
+每个要操作的设计稿仍需打开插件，无需各自重新绑定。多个文件同时连接时，Codex 会按会话选择目标。
 
 ## 还可以这样用
 
@@ -79,6 +83,6 @@ Skill 会记住这份项目的位置，新对话不用重新贴路径。保持 F
 
 ---
 
-配对码过期时运行 `npm run cli -- pair`。更多用法见 [CLI 参考](docs/CLI.md)、[图标设计](docs/ICONS.md)和[图片复刻](docs/IMAGEGEN.md)。
+配对码过期时，直接让 Codex 获取新码，或运行 `npm run cli -- pair`；不用重启终端。更多用法见 [CLI 参考](docs/CLI.md)、[图标设计](docs/ICONS.md)和[图片复刻](docs/IMAGEGEN.md)。
 
 [MIT License](LICENSE) · [第三方依赖说明](docs/THIRD-PARTY-NOTICES.txt)

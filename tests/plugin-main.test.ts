@@ -4,12 +4,13 @@ import { readFile } from 'node:fs/promises';
 import { runInNewContext } from 'node:vm';
 import { fixture } from './figma-fixture.js';
 
-async function boot(readFailure = false, startupFailure = false) {
+async function boot(readFailure = false, startupFailure = false, storage = new Map<string, unknown>()) {
   const { api, page } = fixture();
   const messages: any[] = [];
   const events = new Map<string, () => void>();
   const host = api as any;
   host.showUI = () => {};
+  host.clientStorage = { getAsync: async (key: string) => storage.get(key), setAsync: async (key: string, value: unknown) => { storage.set(key, value); }, deleteAsync: async (key: string) => { storage.delete(key); } };
   host.ui = { postMessage: (message: any) => messages.push(message) };
   host.on = (name: string, callback: () => void) => { if (startupFailure) throw new Error('Synthetic event registration failure'); events.set(name, callback); };
   const root = host.root;
@@ -43,4 +44,21 @@ test('startup errors after opening the UI reach the panel with the actual cause'
   assert.equal(messages.length, 1);
   assert.equal(messages[0].type, 'runtime-error');
   assert.match(messages[0].error.message, /Synthetic event registration failure/);
+});
+
+test('built plugin persists one client authorization across launches and reports storage failures without secrets', async () => {
+  const storage = new Map<string, unknown>();
+  const first = await boot(false, false, storage);
+  const value = 'a'.repeat(64);
+  await first.host.ui.onmessage({ type: 'authorization', id: 'save', operation: 'set', value });
+  assert.equal(first.messages.at(-1).ok, true);
+  const reopened = await boot(false, false, storage);
+  await reopened.host.ui.onmessage({ type: 'authorization', id: 'load', operation: 'get' });
+  assert.equal(reopened.messages.at(-1).value, value);
+  reopened.host.clientStorage.setAsync = async () => { throw new Error(value); };
+  await reopened.host.ui.onmessage({ type: 'authorization', id: 'failed', operation: 'set', value });
+  assert.equal(reopened.messages.at(-1).ok, false);
+  assert.ok(!JSON.stringify(reopened.messages.at(-1)).includes(value));
+  await reopened.host.ui.onmessage({ type: 'authorization', id: 'delete', operation: 'delete' });
+  assert.equal(storage.size, 0);
 });

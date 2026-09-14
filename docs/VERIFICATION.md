@@ -1,20 +1,23 @@
 # 验证记录
 
-验证环境：macOS、Node.js 26.8.1、Google Chrome。插件版本 0.3.3。
+验证环境：macOS、Node.js 26.8.1、Google Chrome。当前插件版本 0.4.0。
 
 ## 真实操作
 
-已在真实 Figma Design 文件中完成连接、文档读取，以及 Grok 图标的生成、复刻和导出。生成图由宿主 image_gen 返回；复刻稿包含 3 个可编辑矢量图层和独立背景。实际导出检查覆盖 1024、64、32 px；SVG 包含 3 条路径，没有嵌入位图。
+0.3.3 已在真实 Figma Design 文件中完成连接、文档读取，以及 Grok 图标的生成、复刻和导出。生成图由宿主 image_gen 返回；复刻稿包含 3 个可编辑矢量图层和独立背景。实际导出检查覆盖 1024、64、32 px；SVG 包含 3 条路径，没有嵌入位图。
 
 结果见 [参考与复刻](showcase/grok.html)、[Figma PNG](showcase/grok-figma.png) 和 [SVG](showcase/grok.svg)。README 的对比截图由这些实际结果排版展示，并非 Figma 客户端窗口截图。
 
 ## 本地回归
 
-- `npm run check`：类型检查、构建、HTTP / 队列、设计与几何合约、图片任务、CLI 集成、skill 安装。
-- 插件 UI 和图标预览的 16 个 Chrome 场景已通过，覆盖 260 / 368 / 640 px 面板、320 / 1280 px 预览、键盘、错误和恢复、localhost 实际 HTTP 传输。
+- `npm run check`：类型检查、构建及 61 项 Node 回归，覆盖 HTTP / 队列、设计与几何合约、图片任务、CLI 集成、skill 安装与授权存储。
+- 插件 UI 和图标预览的 20 个 Chrome 场景已通过，覆盖 260 / 368 / 640 px 面板、320 / 1280 px 预览、键盘、错误和恢复、localhost 实际 HTTP 传输。
+- 持久化检查覆盖实际桥接服务的授权写盘、重启恢复、同名文件隔离、重复恢复请求、撤销授权、损坏/不可写存储。Chrome 场景覆盖重开面板、两个文件复用授权、服务重启恢复、离线重试、暂停保留和不确定命令不重放。
 - skill 安装检查使用独立目录，覆盖含空格和特殊字符的项目路径，以及已有个人 skill 的保留。
 
 ## 验证边界
+
+0.4.0 的 Figma 主线程存储接口使用构建产物与 API 夹具验证；Chrome 宿主模拟 `figma.clientStorage`。真实 Figma 客户端里的首次保存、关闭插件再恢复，以及跨设计稿复用，仍待更新后实测，不由浏览器测试代替。
 
 真实 Grok 案例验证了矢量图标复刻与导出，不代表完整 UI、字体、Auto Layout、组件变体和每一种原生布尔运算都已完成视觉验收。Node 中的 Figma API 夹具不实现 Figma 几何求解器。
 

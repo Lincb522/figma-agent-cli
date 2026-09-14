@@ -9,6 +9,18 @@ import { startBridge } from '../src/bridge/server.ts';
 const exec = promisify(execFile);
 let server, url, artifacts;
 const evidence = resolve(process.env.FIGMA_AGENT_TEST_OUTPUT ?? 'work/verification');
+// Only the test host uses localStorage to emulate Figma's clientStorage across launches.
+const storageHost = `<script>window.addEventListener('message', e => {
+  const m = e.data?.pluginMessage;
+  if (m?.type !== 'authorization') return;
+  let value, ok = true;
+  try {
+    if (m.operation === 'get') value = localStorage.getItem('fixture-authorization');
+    if (m.operation === 'set') { if (location.search.includes('storage-error')) throw new Error(); localStorage.setItem('fixture-authorization', m.value); }
+    if (m.operation === 'delete') localStorage.removeItem('fixture-authorization');
+  } catch { ok = false; }
+  e.source.postMessage({ pluginMessage: { type: 'authorization-result', id: m.id, ok, value } }, '*');
+});</script>`;
 test.beforeAll(async () => {
   await mkdir(evidence, { recursive: true });
   const ui = await readFile('dist/plugin/ui.html', 'utf8');
@@ -38,7 +50,7 @@ test.beforeAll(async () => {
     if (req.url === '/relay') { res.end(`<!doctype html><html><body style="margin:0"><iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>window.addEventListener('message',e=>{if(e.data?.pluginMessage)parent.postMessage(e.data,'*');});</script></body></html>`); return; }
     if (req.url === '/nested') { res.end(`<!doctype html><html><body style="margin:0"><iframe title="Host relay" src="/relay" style="display:block;border:0;width:100vw;height:100vh"></iframe><script>window.addEventListener('message',e=>{const child=document.querySelector('iframe').contentWindow.frames[0];const m=e.data?.pluginMessage;if(m?.type==='ready'||m?.type==='context')child.postMessage({pluginMessage:{type:'context',context:{document:'Nested host document',page:'Main',pageId:'0:1',selection:[]}}},'*');if(m?.type==='command')child.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:m.command.id,result:{nodes:2}}}},'*');});</script></body></html>`); return; }
 
-    res.end(`<!doctype html><html><body style="margin:0"><iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>const child = document.querySelector('iframe'); window.addEventListener('message', e => { if(e.data?.pluginMessage?.type === 'ready' || e.data?.pluginMessage?.type === 'context') child.contentWindow.postMessage({pluginMessage:{type:'context',context:{document:'工作台设计',page:'主要页面',pageId:'0:1',selection:[]}}},'*'); if(e.data?.pluginMessage?.type === 'command') child.contentWindow.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:e.data.pluginMessage.command.id,result:{nodes:2}}}},'*'); });</script></body></html>`);
+    res.end(`<!doctype html><html><body style="margin:0">${storageHost}<iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>const child = document.querySelector('iframe'); window.addEventListener('message', e => { if(e.data?.pluginMessage?.type === 'ready' || e.data?.pluginMessage?.type === 'context') child.contentWindow.postMessage({pluginMessage:{type:'context',context:{document:'工作台设计',page:'主要页面',pageId:'0:1',selection:[]}}},'*'); if(e.data?.pluginMessage?.type === 'command') child.contentWindow.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:e.data.pluginMessage.command.id,result:{nodes:2}}}},'*'); });</script></body></html>`);
   });
   await new Promise(r => server.listen(0, '127.0.0.1', r)); url = `http://127.0.0.1:${server.address().port}`;
 });
@@ -178,7 +190,11 @@ test('manifest localhost connection works through real Chrome CSP, CORS and brid
   const builtUI = await readFile('dist/plugin/ui.html', 'utf8');
   const declared = new URL(manifest.networkAccess.devAllowedDomains[0]);
   expect(declared.hostname).toBe('localhost');
-  const bridge = await startBridge({ port: 0, token: 'synthetic-browser-cli-token', pairingCode: '123456' });
+  test.setTimeout(60_000);
+  const authorizationPath = resolve(artifacts, 'browser-authorizations.json');
+  let bridge = await startBridge({ port: 0, token: 'synthetic-browser-cli-token', pairingCode: '123456', authorizationPath });
+  let pairRequests = 0;
+  page.context().on('request', request => { if (new URL(request.url()).pathname === '/pair' && request.method() === 'POST') pairRequests++; });
   const origin = `http://localhost:${bridge.port}`;
   // Substitute only the test port; preserve the built request hostname and scheme.
   const ui = builtUI.replaceAll(declared.port, String(bridge.port));
@@ -188,7 +204,7 @@ test('manifest localhost connection works through real Chrome CSP, CORS and brid
       res.setHeader('Content-Security-Policy', `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src ${origin}`);
       res.end(ui); return;
     }
-    res.end(`<!doctype html><html><body style="margin:0"><iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>const child=document.querySelector('iframe');window.addEventListener('message',e=>{const m=e.data?.pluginMessage;if(m?.type==='ready'||m?.type==='context')child.contentWindow.postMessage({pluginMessage:{type:'context',context:{document:'Localhost transport fixture',page:'Page',pageId:'0:1',selection:[]}}},'*');if(m?.type==='command')child.contentWindow.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:m.command.id,result:{transport:'localhost-browser-fixture'}}}},'*');});</script></body></html>`);
+    res.end(`<!doctype html><html><body style="margin:0">${storageHost}<iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>const child=document.querySelector('iframe');window.addEventListener('message',e=>{const m=e.data?.pluginMessage;if(m?.type==='ready'||m?.type==='context')child.contentWindow.postMessage({pluginMessage:{type:'context',context:{document:'Localhost transport fixture',page:'Page',pageId:'0:1',selection:[]}}},'*');if(m?.type==='command')child.contentWindow.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:m.command.id,result:{transport:'localhost-browser-fixture'}}}},'*');});</script></body></html>`);
   });
   try {
     await new Promise(resolve => web.listen(0, '127.0.0.1', resolve));
@@ -204,12 +220,119 @@ test('manifest localhost connection works through real Chrome CSP, CORS and brid
     });
     const reply = await response.json(); expect(reply.ok).toBe(true); expect(reply.result.transport).toBe('localhost-browser-fixture');
     await expect(frame(page).locator('#activity')).toContainText('document · 完成');
+    await expect(frame(page).locator('#persistence')).toContainText('已记住此设备');
+    await page.reload();
+    await expect(frame(page).locator('#connected')).toBeVisible();
+    expect(pairRequests).toBe(1);
+    await expect.poll(() => bridge.broker.list().length).toBe(1);
+    const second = await page.context().newPage();
+    await second.goto(`http://127.0.0.1:${web.address().port}`);
+    await expect(frame(second).locator('#connected')).toBeVisible();
+    expect(pairRequests).toBe(1); expect(bridge.broker.list().length).toBe(2);
+    await second.close();
+    await expect.poll(() => bridge.broker.list().length).toBe(1);
+    const port = bridge.port;
+    await bridge.close(); bridge = await startBridge({ port, authorizationPath });
+    await expect.poll(() => bridge.broker.list().length, { timeout: 15_000 }).toBe(1);
+    await expect(frame(page).locator('#connected')).toBeVisible();
+    expect(pairRequests).toBe(1);
+    for (const width of [260, 368, 640]) {
+      await page.setViewportSize({ width, height: 600 });
+      await noOverflow(page);
+      await page.screenshot({ path: resolve(evidence, `plugin-persistent-${width}.png`), fullPage: true });
+    }
     await frame(page).getByText('连接与执行说明', { exact: true }).click();
     await expect(frame(page).locator('details').filter({ hasText: '连接与执行说明' })).toContainText(`localhost:${bridge.port}`); await noOverflow(page);
     await page.screenshot({ path: resolve(evidence, 'plugin-localhost-real-transport.png'), fullPage: true });
     await frame(page).getByRole('button', { name: '断开连接' }).click();
+    await expect(frame(page).locator('#remembered')).toBeVisible();
+    await frame(page).getByRole('button', { name: '重试连接' }).click();
+    await expect(frame(page).locator('#connected')).toBeVisible();
+    await frame(page).getByRole('button', { name: '取消此设备绑定' }).click();
     await expect(frame(page).locator('#pair-form')).toBeVisible();
+    await page.reload();
+    await expect(frame(page).locator('#pair-form')).toBeVisible();
+    expect(bridge.broker.list().length).toBe(0); expect(pairRequests).toBe(1);
   } finally { await page.goto('about:blank'); web.closeAllConnections(); await new Promise(resolve => web.close(resolve)); await bridge.close(); }
+});
+async function persistentFixture(page, mode = 'success', saved = true) {
+  const state = { mode, pairs: 0, resumes: 0, delivered: 0, paused: [] };
+  if (saved) await page.addInitScript(() => { if (window === top) { try { localStorage.setItem('fixture-authorization', 'c'.repeat(64)); } catch {} } });
+  await page.route('http://localhost:38471/**', async route => {
+    const path = new URL(route.request().url()).pathname;
+    const headers = { 'access-control-allow-origin': '*', 'access-control-allow-headers': 'authorization, content-type', 'access-control-allow-methods': 'POST, OPTIONS' };
+    if (route.request().method() === 'OPTIONS') return route.fulfill({ status: 204, headers });
+    if (path === '/pair') state.pairs++;
+    if (path === '/resume') {
+      state.resumes++;
+      if (state.mode === 'offline') return route.abort('connectionrefused');
+      if (state.mode === 'revoked') return route.fulfill({ status: 401, headers, json: { ok: false, error: { code: 'AUTHORIZATION_REVOKED' } } });
+    }
+    if (path === '/plugin/result' && state.mode === 'uncertain') return route.fulfill({ status: 401, headers, json: { ok: false, error: { code: 'UNAUTHORIZED' } } });
+    if (path === '/plugin/heartbeat' && state.mode === 'restart-paused') {
+      state.mode = 'success';
+      return route.fulfill({ status: 401, headers, json: { ok: false, error: { code: 'UNAUTHORIZED' } } });
+    }
+    let result = { ok: true };
+    if (path === '/pair' || path === '/resume') result = { ok: true, sessionId: 'persistent-browser-fixture', token: 'synthetic-session-only', ...(path === '/pair' ? { resumeToken: 'c'.repeat(64) } : {}) };
+    if (path === '/plugin/pause') state.paused.push(route.request().postDataJSON().paused);
+    if (path === '/plugin/poll') {
+      await new Promise(r => setTimeout(r, 100));
+      result = { ok: true, command: state.mode === 'uncertain' && !state.delivered++ ? { id: 'uncertain-once', method: 'apply', params: {}, timeoutMs: 1000 } : null };
+    }
+    await route.fulfill({ headers, json: result }).catch(() => {});
+  });
+  return state;
+}
+test('saved binding retries offline with a finite limit and a keyboard reconnect action, without new pairing', async ({ page }) => {
+  await page.clock.install();
+  const state = await persistentFixture(page, 'offline');
+  await page.goto(url);
+  await expect(frame(page).locator('#status')).toHaveText('正在恢复已保存的连接');
+  for (let n = 1; n <= 6; n++) {
+    await expect.poll(() => state.resumes).toBe(n);
+    await page.clock.fastForward(6500);
+  }
+  await expect(frame(page).getByRole('alert')).toContainText('无需新配对码');
+  expect(state.pairs).toBe(0);
+  for (const width of [260, 640]) { await page.setViewportSize({ width, height: 600 }); await noOverflow(page); }
+  state.mode = 'success';
+  const retry = frame(page).getByRole('button', { name: '重试连接' });
+  await retry.focus(); await page.keyboard.press('Enter');
+  await expect(frame(page).locator('#connected')).toBeVisible(); expect(state.pairs).toBe(0);
+});
+test('revoked saved authorization returns to pairing and storage failure never claims persistence', async ({ page }) => {
+  const state = await persistentFixture(page, 'revoked');
+  await page.goto(url);
+  await expect(frame(page).getByRole('alert')).toContainText('绑定已失效');
+  await expect(frame(page).locator('#pair-form')).toBeVisible();
+  expect(state.pairs).toBe(0);
+  state.mode = 'success';
+  // The same host now fails writes while the current connection can still be used.
+  await page.evaluate(() => history.replaceState(null, '', '?storage-error'));
+  await frame(page).getByLabel('六位配对码').fill('123456');
+  await frame(page).getByRole('button', { name: '连接', exact: true }).click();
+  await expect(frame(page).locator('#connected')).toBeVisible();
+  await expect(frame(page).getByRole('alert')).toContainText('授权未能保存');
+  await expect(frame(page).locator('#persistence')).toHaveText('此连接尚未持久化。');
+  for (const width of [260, 640]) { await page.setViewportSize({ width, height: 600 }); await noOverflow(page); }
+});
+test('an uncertain mutation does not auto-resume or repeat document execution', async ({ page }) => {
+  const state = await persistentFixture(page, 'uncertain');
+  await page.goto(url);
+  await expect(frame(page).getByRole('alert')).toContainText('不要重复发送该命令');
+  await expect(frame(page).locator('#remembered')).toBeVisible();
+  expect(state.resumes).toBe(1); expect(state.delivered).toBe(1); expect(state.pairs).toBe(0);
+  await expect(frame(page).locator('#activity li')).toHaveCount(2);
+});
+test('automatic recovery preserves a paused connection', async ({ page }) => {
+  await page.clock.install(); const state = await persistentFixture(page);
+  await page.goto(url); await expect(frame(page).locator('#connected')).toBeVisible();
+  await frame(page).getByRole('button', { name: '暂停接收' }).click();
+  state.mode = 'restart-paused'; await page.clock.fastForward(10_001);
+  await expect.poll(() => state.resumes).toBe(2);
+  await expect(frame(page).locator('#status')).toHaveText('已暂停接收');
+  expect(state.paused).toEqual([true, true]);
 });
 for(const width of [320,1280]) {
   test(`icon previews preserve small-size geometry, keyboard toggle and long labels at ${width}px`,async({page})=>{

@@ -3145,8 +3145,8 @@ var require_png = __commonJS({
 
 // src/cli/main.ts
 import { parseArgs } from "node:util";
-import { randomUUID as randomUUID3 } from "node:crypto";
-import { readFile as readFile4, writeFile as writeFile5, mkdir as mkdir4, unlink as unlink2, chmod } from "node:fs/promises";
+import { randomUUID as randomUUID4 } from "node:crypto";
+import { readFile as readFile5, writeFile as writeFile6, mkdir as mkdir4, unlink as unlink3, chmod } from "node:fs/promises";
 import { dirname as dirname5, resolve as resolve5, extname as extname2 } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -3219,7 +3219,7 @@ function validateSpec(spec) {
 
 // src/bridge/server.ts
 import { createServer } from "node:http";
-import { randomBytes, randomInt, timingSafeEqual } from "node:crypto";
+import { randomBytes as randomBytes2, randomInt, timingSafeEqual } from "node:crypto";
 
 // src/bridge/broker.ts
 import { randomUUID } from "node:crypto";
@@ -3366,6 +3366,71 @@ var Broker = class {
   }
 };
 
+// src/bridge/authorizations.ts
+import { createHash, randomBytes, randomUUID as randomUUID2 } from "node:crypto";
+import { readFile, writeFile, rename, unlink } from "node:fs/promises";
+var digest = (token) => createHash("sha256").update(token).digest("hex");
+var Authorizations = class _Authorizations {
+  constructor(path) {
+    this.path = path;
+  }
+  path;
+  grants = /* @__PURE__ */ new Set();
+  pending = Promise.resolve();
+  static async open(path) {
+    const store = new _Authorizations(path);
+    if (path) {
+      try {
+        const data = JSON.parse(await readFile(path, "utf8"));
+        if (data.version !== 1 || !Array.isArray(data.grants) || !data.grants.every((v) => typeof v === "string" && /^[a-f0-9]{64}$/.test(v))) throw new Error();
+        store.grants = new Set(data.grants);
+      } catch (error) {
+        if (error.code !== "ENOENT") throw new AgentError("AUTH_STORE_UNREADABLE", "Saved plugin authorizations could not be loaded.", "Restore the authorization file or move it aside and pair again.");
+      }
+    }
+    return store;
+  }
+  identify(token) {
+    if (typeof token !== "string" || !/^[a-f0-9]{64}$/.test(token)) return void 0;
+    const id = digest(token);
+    return this.grants.has(id) ? id : void 0;
+  }
+  change(update) {
+    const operation = this.pending.then(async () => {
+      const next = new Set(this.grants);
+      update(next);
+      if (this.path) {
+        const temp = `${this.path}.${randomUUID2()}.tmp`;
+        try {
+          await writeFile(temp, JSON.stringify({ version: 1, grants: [...next] }), { flag: "wx", mode: 384 });
+          await rename(temp, this.path);
+        } catch {
+          throw new AgentError("AUTH_STORE_WRITE_FAILED", "Plugin authorization could not be saved.", "Check that the bridge state directory is writable, then try again.");
+        } finally {
+          await unlink(temp).catch(() => {
+          });
+        }
+      }
+      this.grants = next;
+    });
+    this.pending = operation.catch(() => {
+    });
+    return operation;
+  }
+  async issue() {
+    const token = randomBytes(32).toString("hex");
+    await this.change((next) => {
+      next.add(digest(token));
+    });
+    return token;
+  }
+  async revoke(id) {
+    await this.change((next) => {
+      next.delete(id);
+    });
+  }
+};
+
 // src/bridge/server.ts
 function equal(a, b) {
   const left = Buffer.from(a);
@@ -3398,12 +3463,34 @@ function context(input2) {
   return { document: input2.document.slice(0, 500), page: input2.page.slice(0, 500), pageId: input2.pageId.slice(0, 100), selection: input2.selection.slice(0, 100).map((n) => ({ id: String(n.id).slice(0, 100), name: String(n.name).slice(0, 500), type: String(n.type).slice(0, 100) })) };
 }
 async function startBridge(options = {}) {
-  const token = options.token ?? randomBytes(32).toString("hex");
+  const authorizations = await Authorizations.open(options.authorizationPath);
+  const token = options.token ?? randomBytes2(32).toString("hex");
   const broker = new Broker();
   let pin = options.pairingCode ?? String(randomInt(1e5, 1e6));
   let pinExpiry = Date.now() + 10 * 6e4;
   let attempts = 0;
   const pluginTokens = /* @__PURE__ */ new Map();
+  const connections = /* @__PURE__ */ new Map();
+  function connect(c, grant, instance) {
+    if (typeof instance !== "string" || !/^[a-zA-Z0-9-]{1,100}$/.test(instance)) throw new AgentError("INVALID_INSTANCE", "A plugin instance ID is required.");
+    const live = new Set(broker.list().map((s) => s.id));
+    for (const [credential2, connection] of connections) {
+      if (!live.has(connection.sessionId)) {
+        connections.delete(credential2);
+        pluginTokens.delete(credential2);
+        continue;
+      }
+      if (connection.grant === grant && connection.instance === instance) {
+        broker.touch(connection.sessionId, c);
+        return { ok: true, sessionId: connection.sessionId, token: credential2, protocol: VERSION };
+      }
+    }
+    const sessionId = broker.register(c);
+    const credential = randomBytes2(32).toString("hex");
+    pluginTokens.set(credential, sessionId);
+    connections.set(credential, { grant, instance, sessionId });
+    return { ok: true, sessionId, token: credential, protocol: VERSION };
+  }
   const server = createServer((req, res) => {
     void (async () => {
       const host = req.headers.host;
@@ -3425,20 +3512,32 @@ async function startBridge(options = {}) {
         return;
       }
       const url = new URL(req.url ?? "/", `http://${expectedHost}`);
-      if (url.pathname === "/health" && req.method === "GET") return send(res, 200, { ok: true, service: "figma-agent", protocol: VERSION });
+      if (url.pathname === "/health" && req.method === "GET") return send(res, 200, { ok: true, service: "figma-agent", protocol: VERSION, persistentPairing: true });
+      const bearer = req.headers.authorization?.replace(/^Bearer /, "") ?? "";
+      if (["/resume", "/forget"].includes(url.pathname) && req.method === "POST") {
+        const input2 = await body(req);
+        const grant = authorizations.identify(bearer);
+        if (!grant) return send(res, 401, { ok: false, error: { code: "AUTHORIZATION_REVOKED", message: "Saved authorization is no longer valid.", recovery: "Run figma-agent pair and bind this Figma client again." } });
+        if (url.pathname === "/resume") return send(res, 200, connect(context(input2.context), grant, input2.instanceId));
+        await authorizations.revoke(grant);
+        for (const [credential, connection] of connections) if (connection.grant === grant) {
+          broker.disconnect(connection.sessionId);
+          pluginTokens.delete(credential);
+          connections.delete(credential);
+        }
+        return send(res, 200, { ok: true });
+      }
       if (url.pathname === "/pair" && req.method === "POST") {
         const input2 = await body(req);
         if (attempts >= 10 || Date.now() > pinExpiry) throw new AgentError("PAIRING_EXPIRED", "The pairing code expired or too many attempts were made.", "Run figma-agent pair to generate a new code.");
         attempts++;
         if (typeof input2.code !== "string" || !equal(input2.code, pin)) throw new AgentError("INVALID_PAIRING_CODE", "The pairing code is incorrect.", "Enter the six-digit code from the local terminal.");
         const c = context(input2.context);
+        if (input2.instanceId !== void 0 && (typeof input2.instanceId !== "string" || !/^[a-zA-Z0-9-]{1,100}$/.test(input2.instanceId))) throw new AgentError("INVALID_INSTANCE", "Invalid plugin instance ID.");
         pinExpiry = 0;
-        const sessionId2 = broker.register(c);
-        const pluginToken = randomBytes(32).toString("hex");
-        pluginTokens.set(pluginToken, sessionId2);
-        return send(res, 200, { ok: true, sessionId: sessionId2, token: pluginToken, protocol: VERSION });
+        const resumeToken = await authorizations.issue();
+        return send(res, 200, { ...connect(c, authorizations.identify(resumeToken), input2.instanceId ?? randomBytes2(16).toString("hex")), resumeToken });
       }
-      const bearer = req.headers.authorization?.replace(/^Bearer /, "") ?? "";
       const cli = equal(bearer, token);
       const sessionId = pluginTokens.get(bearer);
       if (!cli && !sessionId) return send(res, 401, { ok: false, error: { code: "UNAUTHORIZED", message: "Authentication is required.", recovery: "Reconnect the plugin or restart the CLI bridge." } });
@@ -3470,11 +3569,12 @@ async function startBridge(options = {}) {
         if (url.pathname === "/plugin/disconnect") {
           broker.disconnect(sessionId);
           pluginTokens.delete(bearer);
+          connections.delete(bearer);
           return send(res, 200, { ok: true });
         }
       } else {
         if (!cli) throw new AgentError("ROLE_MISMATCH", "A local CLI credential is required.");
-        if (url.pathname === "/sessions" && req.method === "GET") return send(res, 200, { ok: true, result: broker.list() });
+        if (url.pathname === "/sessions" && req.method === "GET") return send(res, 200, { ok: true, persistentPairing: true, result: broker.list() });
         if (url.pathname.startsWith("/requests/") && req.method === "GET") return send(res, 200, { ok: true, result: broker.request(decodeURIComponent(url.pathname.slice(10))) });
         if (url.pathname === "/pairing" && req.method === "POST") {
           await body(req);
@@ -3521,7 +3621,7 @@ var BOOLEAN_OPERATIONS = ["union", "subtract", "intersect", "exclude"];
 
 // src/workflow/icons.ts
 var import_svgpath = __toESM(require_svgpath2(), 1);
-import { readFile, writeFile as writeFile2, mkdir as mkdir2 } from "node:fs/promises";
+import { readFile as readFile2, writeFile as writeFile3, mkdir as mkdir2 } from "node:fs/promises";
 import { resolve as resolve2, dirname as dirname2 } from "node:path";
 
 // src/plugin/keylines.ts
@@ -3566,7 +3666,7 @@ function keylineSvg(size) {
 }
 
 // src/workflow/keyline-output.ts
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, writeFile as writeFile2 } from "node:fs/promises";
 import { resolve, dirname } from "node:path";
 function constructionSvg(size, artwork) {
   const grid = keylineSvg(size);
@@ -3588,10 +3688,10 @@ async function writeGrid(directory, size = 1024) {
     if (e.code === "EEXIST") throw new AgentError("OUTPUT_EXISTS", "The construction directory already exists.", "Use a new directory.");
     throw e;
   }
-  await writeFile(resolve(dir, "figma.json"), JSON.stringify(spec, null, 2) + "\n");
-  await writeFile(resolve(dir, "construction.svg"), svg);
+  await writeFile2(resolve(dir, "figma.json"), JSON.stringify(spec, null, 2) + "\n");
+  await writeFile2(resolve(dir, "construction.svg"), svg);
   const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>\u56FE\u6807\u51E0\u4F55\u6784\u9020\u5E95\u677F</title><style>*{box-sizing:border-box}body{font:14px system-ui;margin:0;color:#2f3433;background:#f5f4f7}main{max-width:940px;margin:auto;padding:24px}h1{font-size:22px}p{line-height:1.7}a{color:#28634b;display:inline-block;padding:10px 12px}a:focus-visible{outline:3px solid #28634b;outline-offset:3px}${constructionStyle}@media(max-width:400px){main{padding:16px}}</style><main><h1>\u56FE\u6807\u6784\u9020\u7F51\u683C \xB7 ${size} \xD7 ${size}</h1><p>\u57FA\u4E8E\u63D0\u4F9B\u7684\u53C2\u8003\u56FE\u91CD\u5EFA\u6BD4\u4F8B\uFF0C\u53EF\u7528\u4E8E\u5C0F\u56FE\u6807\u4E0E App Icon \u7684\u51E0\u4F55\u9020\u578B\u3002</p>${constructionPanel(size)}<a href="construction.svg" download>\u4E0B\u8F7D\u6784\u9020\u7F51\u683C SVG</a><a href="figma.json" download>\u4E0B\u8F7D Figma \u53EF\u7F16\u8F91\u5E95\u677F</a><p>\u5BFC\u5165\u540E\u5728 Artwork \u4E2D\u9020\u578B\u3002Guides \u662F\u9501\u5B9A\u7684\u8F85\u52A9\u56FE\u5C42\uFF1B\u7528 icon shape \u547D\u4EE4\u4ECE\u51E0\u4F55\u6A21\u677F\u521B\u5EFA\u53EF\u53C2\u4E0E\u5E03\u5C14\u8FD0\u7B97\u7684\u5B9E\u5FC3\u64CD\u4F5C\u6570\u3002</p></main><script>${constructionScript}</script></html>`;
-  await writeFile(resolve(dir, "preview.html"), html);
+  await writeFile2(resolve(dir, "preview.html"), html);
   return { directory: dir, size, shapes: KEYLINE_SHAPES, spec: resolve(dir, "figma.json"), svg: resolve(dir, "construction.svg"), preview: resolve(dir, "preview.html"), next: "Apply figma.json, save keys.workbench and keys.icon. Use icon shape <workbench-id> circle and inner-circle, then boolean subtract the two returned IDs. Export the workbench normally for clean artwork; pass --with-guides only for a construction review." };
 }
 
@@ -3639,7 +3739,7 @@ function validateIcon(value) {
   return { name: icon.name, paths };
 }
 async function readIcon(nameOrPath) {
-  return validateIcon(ICONS[nameOrPath] ?? JSON.parse(await readFile(resolve2(nameOrPath), "utf8")));
+  return validateIcon(ICONS[nameOrPath] ?? JSON.parse(await readFile2(resolve2(nameOrPath), "utf8")));
 }
 function buildIcon(input2, options = {}) {
   const icon = validateIcon(input2);
@@ -3692,20 +3792,20 @@ async function writeIcon(directory, icon, options = {}) {
     if (e.code === "EEXIST") throw new AgentError("OUTPUT_EXISTS", "The icon directory already exists.", "Use a new directory to preserve previous icon work.");
     throw e;
   }
-  await writeFile2(resolve2(dir, "icon.svg"), result.svg);
-  await writeFile2(resolve2(dir, "construction.svg"), constructionSvg(result.metadata.size, result.svg));
-  await writeFile2(resolve2(dir, "figma.json"), JSON.stringify(result.spec, null, 2) + "\n");
-  await writeFile2(resolve2(dir, "icon.json"), JSON.stringify({ definition: icon, options: result.metadata }, null, 2) + "\n");
-  await writeFile2(resolve2(dir, "preview.html"), iconPreview(icon, options));
+  await writeFile3(resolve2(dir, "icon.svg"), result.svg);
+  await writeFile3(resolve2(dir, "construction.svg"), constructionSvg(result.metadata.size, result.svg));
+  await writeFile3(resolve2(dir, "figma.json"), JSON.stringify(result.spec, null, 2) + "\n");
+  await writeFile3(resolve2(dir, "icon.json"), JSON.stringify({ definition: icon, options: result.metadata }, null, 2) + "\n");
+  await writeFile3(resolve2(dir, "preview.html"), iconPreview(icon, options));
   return { directory: dir, ...result.metadata, svg: resolve2(dir, "icon.svg"), construction: resolve2(dir, "construction.svg"), spec: resolve2(dir, "figma.json"), preview: resolve2(dir, "preview.html"), next: "Inspect preview.html at actual sizes. Use apply figma.json to create Artwork and locked Guides. The returned keys.icon is the clean artwork frame; keys.workbench includes the construction grid. CLI export excludes guides unless --with-guides is explicit." };
 }
 
 // src/workflow/images.ts
 var import_pngjs = __toESM(require_png(), 1);
-import { createHash } from "node:crypto";
-import { readFile as readFile2, writeFile as writeFile3, stat, realpath } from "node:fs/promises";
+import { createHash as createHash2 } from "node:crypto";
+import { readFile as readFile3, writeFile as writeFile4, stat, realpath } from "node:fs/promises";
 import { resolve as resolve3, relative, dirname as dirname3, extname, isAbsolute } from "node:path";
-var hash = (bytes) => createHash("sha256").update(bytes).digest("hex");
+var hash = (bytes) => createHash2("sha256").update(bytes).digest("hex");
 function decodePNG(bytes) {
   if (bytes.length < 33 || !bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) throw new AgentError("PNG_REQUIRED", "The design workflow requires a PNG reference.");
   const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20);
@@ -3718,13 +3818,13 @@ function decodePNG(bytes) {
 }
 async function readPNG(path) {
   if ((await stat(path)).size > 16 * 1024 * 1024) throw new AgentError("IMAGE_TOO_LARGE", "The PNG exceeds 16 MiB.");
-  const bytes = await readFile2(path);
+  const bytes = await readFile3(path);
   const decoded = decodePNG(bytes);
   return { bytes, width: decoded.width, height: decoded.height, sha256: hash(bytes) };
 }
 async function loadDesign(path) {
   const base = await realpath(dirname3(resolve3(path)));
-  const spec = JSON.parse(await readFile2(path, "utf8"));
+  const spec = JSON.parse(await readFile3(path, "utf8"));
   validateSpec(spec);
   let total = 0;
   const visit = async (node) => {
@@ -3736,7 +3836,7 @@ async function loadDesign(path) {
       const size = (await stat(file)).size;
       total += size;
       if (size > 16 * 1024 * 1024 || total > 16 * 1024 * 1024) throw new AgentError("ASSETS_TOO_LARGE", "Use at most 16 MiB of image assets per apply.");
-      node.imageBase64 = (await readFile2(file)).toString("base64");
+      node.imageBase64 = (await readFile3(file)).toString("base64");
       delete node.imagePath;
     }
     for (const child of node.children ?? []) await visit(child);
@@ -3772,31 +3872,31 @@ function comparePNGs(reference2, rendered) {
 async function writeComparison(directory, reference2, rendered, source = "figma") {
   const result = comparePNGs(reference2, rendered);
   const metrics = { source, width: result.width, height: result.height, meanAbsoluteChannelError: result.meanAbsoluteChannelError, changedPixelFraction: result.changedPixelFraction, threshold: result.threshold, interpretation: "Pixel difference diagnostics, not a perceptual similarity score. Visual review is still required." };
-  await writeFile3(resolve3(directory, "overlay.png"), result.overlay);
-  await writeFile3(resolve3(directory, "difference.png"), result.difference);
-  await writeFile3(resolve3(directory, "comparison.json"), JSON.stringify(metrics, null, 2) + "\n");
+  await writeFile4(resolve3(directory, "overlay.png"), result.overlay);
+  await writeFile4(resolve3(directory, "difference.png"), result.difference);
+  await writeFile4(resolve3(directory, "comparison.json"), JSON.stringify(metrics, null, 2) + "\n");
   const data = (bytes) => "data:image/png;base64," + bytes.toString("base64");
   const title = source === "figma" ? "\u53C2\u8003\u56FE\u4E0E Figma \u590D\u523B\u5BF9\u6BD4" : "\u53C2\u8003\u56FE\u4E0E\u5916\u90E8 PNG \u5BF9\u6BD4";
   const renderLabel = source === "figma" ? "Figma \u5BFC\u51FA\u7684\u590D\u523B\u56FE" : "\u7528\u6237\u63D0\u4F9B\u7684\u5916\u90E8 PNG\uFF08\u6765\u6E90\u672A\u9A8C\u8BC1\uFF09";
   const html = `<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title}</title><style>*{box-sizing:border-box}body{margin:0;font:14px system-ui;color:#22312b;background:#f3f5f0}main{max-width:1500px;margin:auto;padding:24px}h1{font-size:22px;margin:0 0 8px}p{line-height:1.6;color:#5c6860}.controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:20px 0}input{max-width:100%;accent-color:#286c4a}button{padding:9px 14px;border:1px solid #cbd3cb;background:white;border-radius:6px;cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid #286c4a;outline-offset:3px}.comparison{position:relative;max-width:100%;width:${result.width}px;background:white;line-height:0;box-shadow:0 1px 10px #23362b18}.comparison img{display:block;width:100%;height:auto}#render{position:absolute;inset:0;opacity:.5}.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}.pair img{width:100%;height:auto}figure{margin:0;min-width:0}figcaption{font-weight:600;margin-bottom:8px}.note{font-size:12px}@media(max-width:600px){main{padding:16px}.pair{grid-template-columns:1fr}}</style><main><h1>${title}</h1><p>${renderLabel} \xB7 ${result.width} \xD7 ${result.height} px \xB7 \u5DEE\u5F02\u50CF\u7D20\u6BD4\u4F8B ${(result.changedPixelFraction * 100).toFixed(2)}%\u3002\u6B64\u6570\u503C\u7528\u4E8E\u5B9A\u4F4D\u5DEE\u5F02\uFF0C\u4E0D\u80FD\u66FF\u4EE3\u89C6\u89C9\u9A8C\u6536\u3002</p><div class="controls"><label for="opacity">\u590D\u523B\u56FE\u900F\u660E\u5EA6</label><input id="opacity" type="range" min="0" max="100" value="50"><output id="value" for="opacity">50%</output><button id="reference-only">\u4EC5\u53C2\u8003\u56FE</button><button id="render-only">\u4EC5\u590D\u523B\u56FE</button></div><div class="comparison"><img src="${data(reference2)}" alt="\u53C2\u8003\u56FE"><img id="render" src="${data(rendered)}" alt="${renderLabel}"></div><div class="pair"><figure><figcaption>\u5DEE\u5F02\u4F4D\u7F6E</figcaption><img src="${data(result.difference)}" alt="\u7EA2\u8272\u663E\u793A\u8D85\u8FC7\u9608\u503C\u7684\u50CF\u7D20\u5DEE\u5F02"></figure><figure><figcaption>50% \u53E0\u52A0</figcaption><img src="${data(result.overlay)}" alt="\u53C2\u8003\u56FE\u548C\u590D\u523B\u56FE\u5404\u5360\u4E00\u534A\u7684\u53E0\u52A0\u5BF9\u7167"></figure></div><p class="note">\u8BF7\u9010\u9879\u68C0\u67E5\u6587\u5B57\u3001\u884C\u9AD8\u3001\u95F4\u8DDD\u3001\u56FE\u6807\u5F62\u72B6\u3001\u989C\u8272\u3001\u56FE\u7247\u88C1\u5207\u548C\u6EA2\u51FA\u3002\u6587\u672C\u548C\u63A7\u4EF6\u5E94\u4FDD\u6301\u53EF\u7F16\u8F91\u3002</p></main><script>const slider=document.getElementById('opacity');function update(v){slider.value=v;document.getElementById('render').style.opacity=Number(v)/100;document.getElementById('value').textContent=v+'%'}slider.addEventListener('input',()=>update(slider.value));document.getElementById('reference-only').onclick=()=>update('0');document.getElementById('render-only').onclick=()=>update('100');</script></html>`;
-  await writeFile3(resolve3(directory, "comparison.html"), html);
+  await writeFile4(resolve3(directory, "comparison.html"), html);
   return { ...metrics, report: resolve3(directory, "comparison.html"), overlay: resolve3(directory, "overlay.png"), difference: resolve3(directory, "difference.png") };
 }
 
 // src/workflow/jobs.ts
-import { readFile as readFile3, writeFile as writeFile4, mkdir as mkdir3, open, unlink, rename } from "node:fs/promises";
+import { readFile as readFile4, writeFile as writeFile5, mkdir as mkdir3, open, unlink as unlink2, rename as rename2 } from "node:fs/promises";
 import { resolve as resolve4, dirname as dirname4 } from "node:path";
-import { randomUUID as randomUUID2 } from "node:crypto";
+import { randomUUID as randomUUID3 } from "node:crypto";
 var now = () => (/* @__PURE__ */ new Date()).toISOString();
 async function save(dir, job) {
-  const temporary = resolve4(dir, `job-${randomUUID2()}.tmp`);
-  await writeFile4(temporary, JSON.stringify(job, null, 2) + "\n");
-  await rename(temporary, resolve4(dir, "job.json"));
+  const temporary = resolve4(dir, `job-${randomUUID3()}.tmp`);
+  await writeFile5(temporary, JSON.stringify(job, null, 2) + "\n");
+  await rename2(temporary, resolve4(dir, "job.json"));
 }
 async function readJob(directory) {
   let job;
   try {
-    job = JSON.parse(await readFile3(resolve4(directory, "job.json"), "utf8"));
+    job = JSON.parse(await readFile4(resolve4(directory, "job.json"), "utf8"));
   } catch {
     throw new AgentError("JOB_NOT_FOUND", "No readable design job exists in this directory.", "Use design prepare <brief.txt> --dir <new-directory>.");
   }
@@ -3818,7 +3918,7 @@ async function withJob(directory, action) {
     return await action(dir, await readJob(dir));
   } finally {
     await lock.close();
-    await unlink(lockPath);
+    await unlink2(lockPath);
   }
 }
 async function prepareJob(directory, brief, width = void 0, height = void 0, kind = "ui") {
@@ -3835,7 +3935,7 @@ async function prepareJob(directory, brief, width = void 0, height = void 0, kin
     if (error.code === "EEXIST") throw new AgentError("JOB_ALREADY_EXISTS", "Use a new job directory; existing design work is preserved.");
     throw error;
   }
-  const job = { version: 1, id: randomUUID2(), kind, phase: "prepared", createdAt: now(), requestedSize: { width, height } };
+  const job = { version: 1, id: randomUUID3(), kind, phase: "prepared", createdAt: now(), requestedSize: { width, height } };
   const prompt = kind !== "ui" ? `Create one ${kind === "appicon" ? "app icon with a distinct base plate and a clear central mark" : "small UI icon with a readable silhouette"} as a visual reference generated with image_gen. Canvas ${width} x ${height} pixels, PNG. Straight-on artwork, no device shell, captions or presentation mockup. Keep simple forms, deliberate negative space and clear small-size readability. The base and mark will be reconstructed as separate editable Figma vector/boolean layers.
 
 Brief:
@@ -3848,8 +3948,8 @@ ${brief.trim()}
 
 Show one straight-on, full-canvas application screen. No device shell, perspective, watermarks or presentation background. Use coherent spacing, legible real text, consistent controls and a clear hierarchy. Keep the interface practical and detailed enough to rebuild. This image is a visual reference; all text, controls, layout and simple icons will subsequently be rebuilt as native editable nodes.
 `;
-  await writeFile4(resolve4(dir, "brief.txt"), brief);
-  await writeFile4(resolve4(dir, "prompt.txt"), prompt);
+  await writeFile5(resolve4(dir, "brief.txt"), brief);
+  await writeFile5(resolve4(dir, "prompt.txt"), prompt);
   await save(dir, job);
   return { job, directory: dir, prompt: resolve4(dir, "prompt.txt"), next: "Run design generate to prepare an image_gen tool request for the invoking agent, or design import with an existing PNG. Then inspect reference.png and write layout.json." };
 }
@@ -3857,7 +3957,7 @@ async function importReference(directory, image) {
   return withJob(directory, async (dir, job) => {
     if (job.application) throw new AgentError("REFERENCE_IN_USE", "This reference is already associated with a Figma reconstruction.", "Create a new job to use a different reference.");
     const png = await readPNG(resolve4(image));
-    await writeFile4(resolve4(dir, "reference.png"), png.bytes);
+    await writeFile5(resolve4(dir, "reference.png"), png.bytes);
     job.reference = { width: png.width, height: png.height, sha256: png.sha256, source: "imported" };
     job.phase = "reference_ready";
     await save(dir, job);
@@ -3867,9 +3967,9 @@ async function importReference(directory, image) {
 async function requestGeneration(directory) {
   return withJob(directory, async (dir, job) => {
     if (job.phase !== "prepared") throw new AgentError("GENERATION_ALREADY_STARTED", "This job already has a reference or a generation request.", "Inspect design status and the original image_gen call. Do not invoke the tool again automatically. Use a new job for an intentional new generation.");
-    const prompt = await readFile3(resolve4(dir, "prompt.txt"), "utf8");
+    const prompt = await readFile4(resolve4(dir, "prompt.txt"), "utf8");
     if (!prompt.trim()) throw new AgentError("BRIEF_REQUIRED", "The generation prompt is empty.");
-    const id = randomUUID2();
+    const id = randomUUID3();
     const handoff = {
       protocol: "figma-agent-imagegen-v1",
       jobId: job.id,
@@ -3881,7 +3981,7 @@ async function requestGeneration(directory) {
       instructions: "The invoking agent must call its available image_gen tool with these arguments exactly once. This CLI has not generated an image. Inspect the returned image, then accept the actual output file. If the tool is unavailable, report that fact; do not substitute an API or another generator.",
       accept: { command: "design accept", job: dir, image: "<actual local image_gen output file>", generationId: id, resultRef: "<non-secret tool result ID or returned image path>" }
     };
-    await writeFile4(resolve4(dir, "generation-request.json"), JSON.stringify(handoff, null, 2) + "\n");
+    await writeFile5(resolve4(dir, "generation-request.json"), JSON.stringify(handoff, null, 2) + "\n");
     job.generation = { id, tool: "image_gen", requestedAt: now(), promptHash: handoff.promptHash };
     job.phase = "awaiting_image";
     await save(dir, job);
@@ -3899,14 +3999,14 @@ async function acceptGeneratedReference(directory, image, generationId, resultRe
       return { job, reference: resolve4(dir, "reference.png"), reused: true };
     }
     if (job.application || job.phase !== "awaiting_image") throw new AgentError("GENERATION_NOT_AWAITING", "This job is not waiting for a generated image.", "Inspect design status; do not overwrite an existing reconstruction.");
-    const request2 = JSON.parse(await readFile3(resolve4(dir, "generation-request.json"), "utf8"));
-    if (request2.generationId !== generationId || request2.tool !== "image_gen" || hash(request2.arguments?.prompt ?? "") !== job.generation.promptHash || hash(await readFile3(resolve4(dir, "prompt.txt"), "utf8")) !== job.generation.promptHash) throw new AgentError("GENERATION_REQUEST_CHANGED", "The generation prompt or request changed after the handoff.", "Keep the original request intact; use a new job for changed instructions.");
-    const temporary = resolve4(dir, `reference-${randomUUID2()}.tmp`);
+    const request2 = JSON.parse(await readFile4(resolve4(dir, "generation-request.json"), "utf8"));
+    if (request2.generationId !== generationId || request2.tool !== "image_gen" || hash(request2.arguments?.prompt ?? "") !== job.generation.promptHash || hash(await readFile4(resolve4(dir, "prompt.txt"), "utf8")) !== job.generation.promptHash) throw new AgentError("GENERATION_REQUEST_CHANGED", "The generation prompt or request changed after the handoff.", "Keep the original request intact; use a new job for changed instructions.");
+    const temporary = resolve4(dir, `reference-${randomUUID3()}.tmp`);
     try {
-      await writeFile4(temporary, png.bytes);
-      await rename(temporary, resolve4(dir, "reference.png"));
+      await writeFile5(temporary, png.bytes);
+      await rename2(temporary, resolve4(dir, "reference.png"));
     } finally {
-      await unlink(temporary).catch(() => {
+      await unlink2(temporary).catch(() => {
       });
     }
     job.generation.receipt = { resultRef, acceptedAt: now(), sha256: png.sha256, provenance: "agent-reported" };
@@ -3951,9 +4051,9 @@ async function applyReconstruction(directory, layoutPath, sessionId, transport) 
     const supplied = JSON.stringify(spec);
     spec.nodes.push({ type: "IMAGE", tag: job.id + "/reference", imageBase64: png.bytes.toString("base64"), props: { name: "Reference / " + (frame.props?.name ?? "Design"), width: png.width, height: png.height, x: (frame.props?.x ?? 0) + png.width + 80, y: frame.props?.y ?? 0, locked: true } });
     if (Buffer.byteLength(JSON.stringify(spec)) > MAX_BODY - 4096) throw new AgentError("ASSETS_TOO_LARGE", "The reference and layout exceed the bridge request limit.", "Reduce the PNG size or split raster assets before applying.");
-    job.application = { requestId: randomUUID2(), sessionId, layoutHash: hash(supplied) };
+    job.application = { requestId: randomUUID3(), sessionId, layoutHash: hash(supplied) };
     job.phase = "applying";
-    await writeFile4(resolve4(dir, "layout.request.json"), JSON.stringify(spec, null, 2) + "\n");
+    await writeFile5(resolve4(dir, "layout.request.json"), JSON.stringify(spec, null, 2) + "\n");
     await save(dir, job);
     try {
       const reply = await transport.send("apply", { spec }, job.application.requestId, sessionId);
@@ -3982,16 +4082,16 @@ async function captureReconstruction(directory, transport, sessionId) {
     if (!job.application?.rootId) throw new AgentError("NO_RECONSTRUCTION", "No confirmed Figma reconstruction exists.", "Apply a layout or recover the previous request first.");
     const png = await reference(dir, job);
     const target = sessionId ?? job.application.sessionId;
-    const checked = await transport.send("audit", { id: job.application.rootId }, randomUUID2(), target);
+    const checked = await transport.send("audit", { id: job.application.rootId }, randomUUID3(), target);
     if (!checked.ok) throw new AgentError(checked.error.code, checked.error.message, checked.error.recovery);
     if (checked.result.tag !== job.id) throw new AgentError("WRONG_RECONSTRUCTION", "The node in this session does not belong to this design job.", "Choose the original file; node IDs alone are not unique across files.");
     if (job.kind && job.kind !== "ui" ? !checked.result.hasEditableIcon : !checked.result.hasEditableUI) throw new AgentError("EDITABLE_UI_REQUIRED", "The live Figma frame does not contain editable UI text and structure.");
-    const exported = await transport.send("export", { id: job.application.rootId, format: "PNG", scale: 1, layoutBounds: true }, randomUUID2(), target);
+    const exported = await transport.send("export", { id: job.application.rootId, format: "PNG", scale: 1, layoutBounds: true }, randomUUID3(), target);
     if (!exported.ok) throw new AgentError(exported.error.code, exported.error.message, exported.error.recovery);
     const bytes = Buffer.from(exported.result.base64, "base64");
     if (bytes.length !== exported.result.byteLength) throw new AgentError("INVALID_EXPORT", "The export byte count is inconsistent.");
     const comparison = await writeComparison(dir, png.bytes, bytes);
-    await writeFile4(resolve4(dir, "render.png"), bytes);
+    await writeFile5(resolve4(dir, "render.png"), bytes);
     job.capture = { exportedAt: now(), sha256: hash(bytes), audit: checked.result, comparison };
     job.phase = "captured";
     await save(dir, job);
@@ -4011,7 +4111,7 @@ async function compareReference(directory, renderPath) {
 
 // src/cli/main.ts
 var root = resolve5(dirname5(fileURLToPath(import.meta.url)), "..");
-var usage = `Figma Agent CLI 0.3.2
+var usage = `Figma Agent CLI 0.4.0
 
 Usage: figma-agent <command> [arguments] [options]
 
@@ -4089,7 +4189,7 @@ var guide = `# Figma Agent workflow
 This CLI controls an OPEN Figma Design file through the paired development plugin.
 Use node "${resolve5(root, "dist/cli.js")}" <command> from any directory.
 
-1. Run sessions and document. Select an explicit --session when several files are open.
+1. Run sessions and document. Select an explicit --session when several files are open. Binding is saved per Figma client and reused across files; each file still needs the plugin running. If the bridge is stopped, start serve --quiet. If first-time binding is needed, run pair yourself and show the temporary six-digit code to the user. Do not read or show persistent credentials. Reopening the plugin or restarting the bridge restores a saved binding; never restart the bridge just to get a code.
 2. Read selection, inspect, find, variables, styles and fonts before designing in an existing file.
 3. Establish the requested screens, widths, actual content and component system. Reuse the file's design language.
 4. Use apply for editable frame/component/text/shape trees. Save returned IDs and key mappings.
@@ -4162,7 +4262,7 @@ var stateDir = resolve5(values["state-dir"] ?? resolve5(root, ".figma-agent"));
 var statePath = resolve5(stateDir, "session.json");
 async function input(path) {
   if (!path) throw new AgentError("INPUT_REQUIRED", "A file path is required.", "Run figma-agent --help.");
-  if (path !== "-") return readFile4(resolve5(path), "utf8");
+  if (path !== "-") return readFile5(resolve5(path), "utf8");
   let result = "";
   for await (const chunk of process.stdin) result += chunk;
   return result;
@@ -4187,7 +4287,7 @@ function numeric(value) {
 }
 async function state() {
   try {
-    const s = JSON.parse(await readFile4(statePath, "utf8"));
+    const s = JSON.parse(await readFile5(statePath, "utf8"));
     if (s.protocol !== VERSION || !Number.isInteger(s.port) || s.port < 1 || s.port > 65535 || typeof s.token !== "string") throw new Error();
     return s;
   } catch {
@@ -4210,7 +4310,7 @@ async function output(value, save2 = true) {
   const text = JSON.stringify(value, null, 2) + "\n";
   if (values.out && save2) {
     try {
-      await writeFile5(resolve5(values.out), text);
+      await writeFile6(resolve5(values.out), text);
     } catch {
       throw new AgentError("OUTPUT_WRITE_FAILED", "The command returned but its JSON could not be saved.", `Check figma-agent request ${value.id} before repeating a mutation.`, { requestId: value.id });
     }
@@ -4291,11 +4391,11 @@ async function main() {
     return;
   }
   if (command === "serve") {
-    const bridge = await startBridge();
+    const bridge = await startBridge({ authorizationPath: resolve5(stateDir, "authorizations.json") });
     try {
       await mkdir4(stateDir, { recursive: true, mode: 448 });
       await chmod(stateDir, 448);
-      await writeFile5(statePath, JSON.stringify({ protocol: VERSION, port: bridge.port, token: bridge.token, pid: process.pid }), { mode: 384 });
+      await writeFile6(statePath, JSON.stringify({ protocol: VERSION, port: bridge.port, token: bridge.token, pid: process.pid }), { mode: 384 });
       await chmod(statePath, 384);
     } catch (e) {
       await bridge.close();
@@ -4311,7 +4411,7 @@ Keep this terminal and the Figma plugin open.`);
       if (closing) return;
       closing = true;
       await bridge.close();
-      await unlink2(statePath).catch(() => {
+      await unlink3(statePath).catch(() => {
       });
     };
     process.once("SIGINT", () => {
@@ -4410,7 +4510,7 @@ Keep this terminal and the Figma plugin open.`);
       break;
     case "image": {
       method = command;
-      const bytes = await readFile4(resolve5(required()));
+      const bytes = await readFile5(resolve5(required()));
       if (bytes.length > 16 * 1024 * 1024) throw new AgentError("IMAGE_TOO_LARGE", "Local images must be at most 16 MiB.");
       params = { base64: bytes.toString("base64"), name: args[0].split(/[\\/]/).pop(), parentId: values.parent, width: numeric(values.width), height: numeric(values.height) };
       break;
@@ -4422,7 +4522,7 @@ Keep this terminal and the Figma plugin open.`);
     default:
       throw new AgentError("UNKNOWN_COMMAND", `Unknown command: ${command}.`, "Run figma-agent --help.");
   }
-  const id = values["request-id"] ?? randomUUID3();
+  const id = values["request-id"] ?? randomUUID4();
   const timeoutMs = numeric(values.timeout) ?? 6e4;
   if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 3e5) throw new AgentError("INVALID_TIMEOUT", "Use a timeout from 100 to 300000 milliseconds.");
   let result;
@@ -4434,7 +4534,7 @@ Keep this terminal and the Figma plugin open.`);
   if (command === "export" && result.ok) {
     const bytes = Buffer.from(result.result.base64, "base64");
     if (bytes.length !== result.result.byteLength) throw new AgentError("INVALID_EXPORT", "The returned export size is inconsistent.");
-    await writeFile5(resolve5(values.out), bytes);
+    await writeFile6(resolve5(values.out), bytes);
     console.log(JSON.stringify({ ok: true, id, nodeId: result.result.nodeId, requestedNodeId: result.result.requestedNodeId, guidesExcluded: result.result.guidesExcluded, format: result.result.format, path: resolve5(values.out), bytes: bytes.length }, null, 2));
   } else await output(result, command !== "export");
 }
