@@ -47,6 +47,11 @@ test.beforeAll(async () => {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
     if(pages.has(req.url)){res.end(pages.get(req.url));return;}
     if (req.url === '/plugin') { res.end(ui); return; }
+    if (req.url === '/srcdoc' || req.url === '/srcdoc-failure') {
+      const inline = req.url === '/srcdoc-failure' ? ui.replace('<script>', '<script>Object.defineProperty(Crypto.prototype, "getRandomValues", { value: undefined });') : ui;
+      const escaped = inline.replaceAll('&', '&amp;').replaceAll('"', '&quot;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+      res.end(`<!doctype html><html><body style="margin:0">${storageHost}<iframe title="Plugin" srcdoc="${escaped}" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>window.addEventListener('message',e=>{const m=e.data?.pluginMessage;if(m?.type==='ready'||m?.type==='context')e.source.postMessage({pluginMessage:{type:'context',context:{document:'Inline Figma host',page:'Page',pageId:'0:1',selection:[]}}},'*');if(m?.type==='command')e.source.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:m.command.id,result:{nodes:2}}}},'*');});</script></body></html>`); return;
+    }
     if (req.url === '/relay') { res.end(`<!doctype html><html><body style="margin:0"><iframe title="Plugin" src="/plugin" style="display:block;border:0;width:100vw;height:100vh" sandbox="allow-scripts allow-forms"></iframe><script>window.addEventListener('message',e=>{if(e.data?.pluginMessage)parent.postMessage(e.data,'*');});</script></body></html>`); return; }
     if (req.url === '/nested') { res.end(`<!doctype html><html><body style="margin:0"><iframe title="Host relay" src="/relay" style="display:block;border:0;width:100vw;height:100vh"></iframe><script>window.addEventListener('message',e=>{const child=document.querySelector('iframe').contentWindow.frames[0];const m=e.data?.pluginMessage;if(m?.type==='ready'||m?.type==='context')child.postMessage({pluginMessage:{type:'context',context:{document:'Nested host document',page:'Main',pageId:'0:1',selection:[]}}},'*');if(m?.type==='command')child.postMessage({pluginMessage:{type:'result',reply:{ok:true,id:m.command.id,result:{nodes:2}}}},'*');});</script></body></html>`); return; }
 
@@ -284,6 +289,38 @@ async function persistentFixture(page, mode = 'success', saved = true) {
   });
   return state;
 }
+test('inline Figma panel connects without the secure-context-only randomUUID API', async ({ page }) => {
+  const errors = []; page.on('pageerror', e => errors.push(e.message));
+  const hostHTML = await (await fetch(url + '/srcdoc')).text();
+  await page.route('http://figma-host.test/**', route => route.fulfill({ contentType: 'text/html; charset=utf-8', body: hostHTML }));
+  const state = await persistentFixture(page, 'success', false);
+  await page.goto('http://figma-host.test');
+  expect(await page.frames()[1].evaluate(() => ({ secure: isSecureContext, uuid: typeof crypto.randomUUID, random: typeof crypto.getRandomValues }))).toEqual({ secure: false, uuid: 'undefined', random: 'function' });
+  await frame(page).getByLabel('六位配对码').fill('123456', { timeout: 2000 });
+  await frame(page).getByRole('button', { name: '连接', exact: true }).click();
+  await writeFile(resolve(evidence, 'inline-host-observation.json'), JSON.stringify({ errors, frames: page.frames().map(f => f.url()) }, null, 2));
+  await expect(frame(page).locator('#connected')).toBeVisible();
+  await expect(frame(page).locator('#persistence')).toContainText('已记住此设备');
+  expect(state.pairs).toBe(1); expect(errors).toEqual([]);
+  expect(await page.frames()[1].evaluate(() => location.href)).toBe('about:srcdoc');
+});
+test('a panel startup error is visible and cannot navigate the pairing form to a blank page', async ({ page }) => {
+  let pairs = 0;
+  page.on('request', request => { if (request.url().endsWith('/pair')) pairs++; });
+  await page.goto(url + '/srcdoc-failure');
+  await expect(frame(page).getByRole('alert')).toContainText('面板启动失败');
+  await expect(frame(page).locator('#diagnostic-text')).toContainText('getRandomValues');
+  await expect(frame(page).getByRole('button', { name: '连接', exact: true })).toBeDisabled();
+  await frame(page).getByLabel('六位配对码').fill('123456');
+  await frame(page).getByLabel('六位配对码').press('Enter');
+  await frame(page).locator('#pair-form').evaluate(form => form.requestSubmit());
+  await expect(frame(page).locator('#pair-form')).toBeVisible(); expect(pairs).toBe(0);
+  expect(await page.frames()[1].evaluate(() => location.href)).toBe('about:srcdoc');
+  for (const width of [260, 640]) {
+    await page.setViewportSize({ width, height: 600 }); await noOverflow(page);
+    await page.screenshot({ path: resolve(evidence, `plugin-ui-boot-error-${width}.png`), fullPage: true });
+  }
+});
 test('saved binding retries offline with a finite limit and a keyboard reconnect action, without new pairing', async ({ page }) => {
   await page.clock.install();
   const state = await persistentFixture(page, 'offline');

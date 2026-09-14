@@ -14,7 +14,7 @@ import { loadDesign } from '../workflow/images.js';
 import { prepareJob, importReference, requestGeneration, acceptGeneratedReference, readJob, applyReconstruction, recoverApplication, captureReconstruction, compareReference, type Transport } from '../workflow/jobs.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const usage = `Figma Agent CLI 0.4.0
+const usage = `Figma Agent CLI 0.4.1
 
 Usage: figma-agent <command> [arguments] [options]
 

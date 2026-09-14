@@ -4,7 +4,9 @@ const el = <T extends HTMLElement>(id: string) => document.getElementById(id) as
 let context: Context | undefined;
 let token = '';
 let resumeToken = '';
-const instanceId = crypto.randomUUID();
+// getRandomValues also works in iframe contexts where randomUUID is unavailable.
+function messageId() { return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join(''); }
+const instanceId = messageId();
 let connecting = false;
 let resumePaused = false;
 const storageRequests = new Map<string, (message: any) => void>();
@@ -34,7 +36,7 @@ function log(message: string) {
 }
 class ConnectionError extends Error { constructor(message: string, public code: string) { super(message); } }
 function storage(operation: 'get' | 'set' | 'delete', value?: string): Promise<unknown> {
-  const id = crypto.randomUUID();
+  const id = messageId();
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => { storageRequests.delete(id); reject(new ConnectionError('Figma 未响应授权存储请求。请关闭并重新打开插件。', 'STORAGE_FAILED')); }, 6000);
     storageRequests.set(id, message => {
@@ -258,3 +260,5 @@ void storage('get').then(value => {
   if (generation !== initialGeneration) return;
   if (typeof value === 'string' && /^[a-f0-9]{64}$/.test(value)) { resumeToken = value; el('forget').hidden = false; void resume(); }
 }).catch(() => { /* Manual pairing remains available when clientStorage cannot be read. */ });
+document.body.dataset.uiReady = 'true';
+el<HTMLButtonElement>('connect').disabled = false;

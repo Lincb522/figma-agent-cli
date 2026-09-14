@@ -4111,7 +4111,7 @@ async function compareReference(directory, renderPath) {
 
 // src/cli/main.ts
 var root = resolve5(dirname5(fileURLToPath(import.meta.url)), "..");
-var usage = `Figma Agent CLI 0.4.0
+var usage = `Figma Agent CLI 0.4.1
 
 Usage: figma-agent <command> [arguments] [options]
 

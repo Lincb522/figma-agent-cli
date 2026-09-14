@@ -8,15 +8,15 @@
 *{box-sizing:border-box}body{margin:0;min-width:240px}button,input{font:inherit}button{cursor:pointer}button:disabled{cursor:default;opacity:.55}button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--figma-color-border-brand,#2d855b);outline-offset:3px}header{display:flex;gap:10px;align-items:center;padding:20px 20px 17px;border-bottom:1px solid var(--line)}.mark{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:var(--accent);color:white;flex:none}h1{font-size:14px;font-weight:650;margin:0}header p{font-size:11px;color:var(--muted);margin:3px 0 0}main{padding:18px 20px 20px}.status-row{display:flex;align-items:center;gap:8px;margin-bottom:15px;font-weight:600}.dot{width:7px;height:7px;border-radius:50%;background:var(--muted)}.dot[data-state="connected"],.dot[data-state="running"]{background:#2e9060}.dot[data-state="error"]{background:#d05143}.dot[data-state="paused"]{background:#c98c31}.document{border:1px solid var(--line);border-radius:9px;padding:12px;margin-bottom:18px}.label{color:var(--muted);font-size:11px;display:block;margin-bottom:6px}.file{font-size:13px;font-weight:600;overflow-wrap:anywhere;line-height:1.5}.page{color:var(--muted);overflow-wrap:anywhere;margin-top:4px;line-height:1.5}p{line-height:1.65;margin:0 0 12px}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px}.command{background:var(--surface);padding:10px 12px;border-radius:6px;margin-bottom:14px;overflow-wrap:anywhere}label{display:block;font-weight:550;margin-bottom:7px}.pair-row{display:flex;gap:8px}input{min-width:0;flex:1;background:var(--figma-color-bg,#fff);color:inherit;border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px;letter-spacing:3px}button{border:1px solid var(--line);border-radius:6px;padding:9px 14px;background:var(--figma-color-bg,#fff);color:inherit;font-weight:550}.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}.hint{color:var(--muted);font-size:11px;margin-top:9px}.error{border-left:3px solid #c95044;background:var(--surface);padding:9px 11px;margin:12px 0;overflow-wrap:anywhere;line-height:1.6}.session{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:11px;overflow-wrap:anywhere;user-select:all;color:var(--muted)}.actions{display:flex;gap:8px;margin-top:13px}.actions button{flex:1}.log-heading{display:flex;align-items:center;justify-content:space-between;margin:20px 0 9px}.log-heading h2{font-size:11px;font-weight:600;margin:0;color:var(--muted)}#activity{list-style:none;padding:0;margin:0;max-height:160px;overflow:auto}#activity li{padding:9px 0;display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid var(--line);line-height:1.45;overflow-wrap:anywhere}#activity time{color:var(--muted);font-size:10px;white-space:nowrap}.empty{color:var(--muted);font-size:11px;margin:0}details{margin-top:17px;border-top:1px solid var(--line);padding-top:12px}summary{cursor:pointer;color:var(--muted);font-size:11px}details p{margin-top:9px;font-size:11px;color:var(--muted)}[hidden]{display:none!important}@media(max-width:300px){header{padding:16px 14px}main{padding:16px 14px}.pair-row{flex-wrap:wrap}.pair-row button{width:100%}.pair-row input{width:100%;flex-basis:100%}}@media(prefers-color-scheme:dark){:root{--accent:#448661;--line:var(--figma-color-border,#414742);--muted:var(--figma-color-text-secondary,#b3bcb4);--surface:var(--figma-color-bg-secondary,#2d332e);color:var(--figma-color-text,#edf1eb);background:var(--figma-color-bg,#232824)}input,button{background:var(--figma-color-bg,#232824)}.primary{background:var(--accent)}}
 </style>
 </head>
-<body data-version="0.4.0">
+<body data-version="0.4.1">
 <header><div class="mark" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 14.5V3.5H14M3 9H11M10 14.5L14.5 10M10 10H14.5V14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h1>Figma Agent</h1><p>连接本地设计 CLI</p></div></header>
 <main>
 <div class="status-row" role="status" aria-live="polite"><span class="dot" id="dot"></span><span id="status">未连接</span></div>
 <section class="document" aria-label="当前 Figma 文件"><span class="label">当前文件</span><div class="file" id="document">等待 Figma 文档</div><div class="page" id="page">打开设计文件后连接</div></section>
-<form id="pair-form">
+<form id="pair-form" onsubmit="return false">
 <p>首次使用时，让 Codex 获取配对码，或在项目目录启动 CLI。</p>
 <div class="command"><code>npm start</code></div>
-<label for="code">六位配对码</label><div class="pair-row"><input id="code" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="••••••" required aria-describedby="code-hint"><button class="primary" id="connect" type="submit">连接</button></div>
+<label for="code">六位配对码</label><div class="pair-row"><input id="code" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="••••••" required aria-describedby="code-hint"><button class="primary" id="connect" type="submit" disabled>连接</button></div>
 <p class="hint" id="code-hint">绑定一次，此设备上的其他文件也能自动连接。配对码 10 分钟内有效：<code>npm run cli -- pair</code></p>
 </form>
 <section id="remembered" hidden aria-label="已保存的绑定"><p>已记住此设备的绑定。保持本地 CLI 运行，即可连接当前文件。</p><button class="primary" id="retry" type="button">重试连接</button></section>
@@ -27,6 +27,17 @@
 <div class="log-heading"><h2>最近命令</h2></div><p class="empty" id="empty">连接后，agent 的操作会显示在这里。</p><ol id="activity" aria-label="最近命令"></ol>
 <details><summary>连接与执行说明</summary><p>连接地址：<code>localhost:38471</code>。每个目标文件都需要打开插件；同一设备复用绑定，CLI 仍区分文件。断开连接只结束当前会话，取消此设备绑定会同时结束使用此绑定的其他文件会话。授权保存在 Figma 本机存储与项目的 .figma-agent 目录；清除存储或更换插件 ID 后需要重新绑定。暂停会在当前命令完成后停止接收。</p></details>
 </main>
+<script>
+window.addEventListener('error', function(event) {
+  if (document.body.dataset.uiReady === 'true') return;
+  var detail = typeof event.message === 'string' ? event.message.slice(0, 240) : '未知启动错误';
+  var box = document.getElementById('error');
+  box.textContent = '面板启动失败。请关闭并重新打开插件；仍失败时提供下方连接诊断。'; box.hidden = false;
+  document.getElementById('status').textContent = '面板启动失败'; document.getElementById('dot').dataset.state = 'error';
+  var diagnostics = document.getElementById('diagnostics'); diagnostics.hidden = false; diagnostics.open = true;
+  document.getElementById('diagnostic-text').textContent = '面板 ' + document.body.dataset.version + '：' + detail;
+});
+</script>
 <script>"use strict";
 (() => {
   var __defProp = Object.defineProperty;
@@ -43,7 +54,10 @@
   var context;
   var token = "";
   var resumeToken = "";
-  var instanceId = crypto.randomUUID();
+  function messageId() {
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  }
+  var instanceId = messageId();
   var connecting = false;
   var resumePaused = false;
   var storageRequests = /* @__PURE__ */ new Map();
@@ -88,7 +102,7 @@
     }
   };
   function storage(operation, value) {
-    const id = crypto.randomUUID();
+    const id = messageId();
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         storageRequests.delete(id);
@@ -438,6 +452,8 @@
     }
   }).catch(() => {
   });
+  document.body.dataset.uiReady = "true";
+  el("connect").disabled = false;
 })();
 </script>
 </body></html>
