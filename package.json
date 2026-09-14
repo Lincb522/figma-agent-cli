@@ -1,6 +1,6 @@
 {
   "name": "figma-agent-cli",
-  "version": "0.4.2",
+  "version": "0.5.0",
   "description": "A local Figma plugin and CLI for agent-driven editable UI design",
   "private": true,
   "type": "module",
@@ -18,7 +18,7 @@
     "start": "node dist/cli.js serve",
     "cli": "node dist/cli.js",
     "test:ui": "npm run build && playwright test --config playwright.config.mjs",
-    "skill:install": "node scripts/install-skill.mjs"
+    "skill:install": "node scripts/install-skill.mjs --setup"
   },
   "devDependencies": {
     "@figma/plugin-typings": "1.138.0",

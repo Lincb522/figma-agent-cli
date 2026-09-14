@@ -676,7 +676,7 @@ ${p.code}
       figma.ui.postMessage({ type: "result", reply });
       context();
     };
-    figma.ui.postMessage({ type: "runtime-ready", version: "0.4.2" });
+    figma.ui.postMessage({ type: "runtime-ready", version: "0.5.0" });
     context();
   }
   try {
@@ -684,6 +684,6 @@ ${p.code}
   } catch (error) {
     const failure = fault(error);
     console.error("[Figma Agent] Initialization failed:", failure.message);
-    figma.ui.postMessage({ type: "runtime-error", version: "0.4.2", error: failure });
+    figma.ui.postMessage({ type: "runtime-error", version: "0.5.0", error: failure });
   }
 })();
