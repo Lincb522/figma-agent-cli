@@ -1,3 +1,4 @@
+import { CODE_EXPORT, exportCode, type CodeFormat } from '../workflow/code.js';
 import { parseArgs } from 'node:util';
 import { randomUUID } from 'node:crypto';
 import { readFile, writeFile, mkdir, unlink, chmod } from 'node:fs/promises';
@@ -15,7 +16,7 @@ import { loadDesign } from '../workflow/images.js';
 import { prepareJob, importReference, requestGeneration, acceptGeneratedReference, readJob, applyReconstruction, recoverApplication, captureReconstruction, compareReference, type Transport } from '../workflow/jobs.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const usage = `Figma Agent CLI 0.6.0
+const usage = `Figma Agent CLI 0.7.0
 
 Usage: figma-agent <command> [arguments] [options]
 
@@ -32,6 +33,8 @@ Usage: figma-agent <command> [arguments] [options]
   delete <node-id...>             Delete the specified scene nodes
   select <node-id...>             Select and zoom to nodes on the current page
   export [node-id] --out <path>   Write PNG/JPG/SVG/PDF from the live Figma canvas
+  code export [node-id] --dir <new-directory> [--format html|react]
+                                 Write a code reference and Codex handoff from Figma
   image <image-file>              Insert a local image (--parent, --width, --height)
   exec <script.js>                Execute JavaScript with figma, h and args
   variables | styles             Read the file's design tokens and styles
@@ -102,7 +105,8 @@ Use node "${resolve(root, 'dist/cli.js')}" <command> from any directory.
 4. Use apply for editable frame/component/text/shape trees. Save returned IDs and key mappings.
 5. Use patch for focused edits. exec exposes the full Figma Plugin API for variants, variables, component instances, vectors, constraints, prototypes, and advanced layout.
 6. Use export <frame-id> --out preview.png. Open that ACTUAL image with your image-viewing tool; check hierarchy, alignment, clipping, text, spacing, and narrow/wide variants. Adjust and export again where needed.
-7. Report the created node IDs, exported image paths, and any Figma runtime limitations honestly.
+7. After the design or reconstruction is verified, use code export <frame-id> --dir <new-directory-in-the-current-project> --format react (or html) when handing it to implementation. Read the returned CODEX.md, design.json and handoff.json, and view preview.png. Adapt this visual reference to the current project; do not treat fixed-size CSS as a finished responsive app or stored reactions as running interactions.
+8. Report the created node IDs, exported image paths, code handoff path and any Figma runtime limitations honestly.
 
 For interactive prototypes, use prototype get <node-id> before edits and prototype set <node-id> <reactions.json> to replace its native Reaction[]; retain unrelated interactions. prototype clear removes all interactions from one node. Use actions[] (not deprecated action). Times are seconds (0.3 = 300 ms), instant transitions use null. schema.prototype lists triggers, navigation, animation and easing options. Build matching named layers for SMART_ANIMATE. For CHANGE_TO create main component variants in one component set via exec and figma.combineAsVariants; place an instance in a frame for preview. h.prototype(id, reactions) uses the same validated setter from exec. See examples/interactive-toggle.js for a complete editable example. Read reactions back after setting; select the preview frame and use Figma Present to test clicks, hover, return paths and intermediate animation. A PNG export or stored reaction does not prove playback. Never replay an uncertain prototype write or demo creation.
 
@@ -173,6 +177,23 @@ async function output(value: any, save = true) {
 async function main() {
   if (values.help || command === 'help') { console.log(usage); return; }
   if (command === 'agent') { console.log(guide); return; }
+  if (command === 'code') {
+    if (required() !== 'export') throw new AgentError('UNKNOWN_COMMAND','Use code export [node-id] --dir <new-directory>.');
+    if (!values.dir) throw new AgentError('DIRECTORY_REQUIRED','code export requires --dir <new-directory>.');
+    const timeoutMs = numeric(values.timeout) ?? 60_000;
+    if (!Number.isInteger(timeoutMs) || timeoutMs < 100 || timeoutMs > 300_000) throw new AgentError('INVALID_TIMEOUT','Use a timeout from 100 to 300000 milliseconds.');
+    const format = values.format ?? 'html';
+    if (!CODE_EXPORT.formats.includes(format)) throw new AgentError('INVALID_CODE_FORMAT','Use --format html or react.');
+    const sessions = (await request('/sessions')).result;
+    const session = values.session ? sessions.find((s:any)=>s.id===values.session) : sessions.length===1 ? sessions[0] : null;
+    if (!session) throw new AgentError('SESSION_REQUIRED','Choose one connected Figma session.','Run sessions and pass --session <id>.');
+    const transport: Transport = {
+      send: async(method,params,id,sessionId)=>request('/commands',{id,method,params,sessionId,timeoutMs},timeoutMs+5000),
+      lookup: async(id)=>(await request(`/requests/${encodeURIComponent(id)}`)).result,
+    };
+    await output({ok:true,result:await exportCode(values.dir,args[1],format as CodeFormat,session.id,transport)});
+    return;
+  }
   if (command === 'design') {
     const action=required();
     const timeoutMs=numeric(values.timeout)??60_000;
@@ -204,6 +225,7 @@ async function main() {
       spec:{parentId:'optional node ID',nodes:[{key:'screen',type:'FRAME',props:{name:'Screen',width:390,height:844},children:[{type:'TEXT',props:{characters:'Hello',fontName:{family:'Inter',style:'Regular'},fontSize:24}}]}]},
       boolean:{operations:[...BOOLEAN_OPERATIONS,'flatten','outline'],params:{operation:'lowercase operation',ids:['base ID','cutter ID'],parentId:'required for different parents',keepInputs:false,name:'optional'},declarative:{type:'BOOLEAN',operation:'UNION | SUBTRACT | INTERSECT | EXCLUDE',children:'two or more NodeSpecs in bottom-to-top order'},set:{id:'live BOOLEAN_OPERATION node',operation:BOOLEAN_OPERATIONS}},
       prototype:PROTOTYPE,
+      code:CODE_EXPORT,
       image:{type:'IMAGE',imagePath:'relative PNG/JPG/GIF inside layout directory; CLI hydrates bytes',imageBase64:'alternative inline bytes'},
       icon:{keylineShapes:KEYLINE_SHAPES,keylines:{create:'icon grid --dir <new-directory> --size 1024',operand:'icon shape <workbench-id> <shape>',cleanExport:'export <workbench-id> --out icon.png',constructionExport:'export <workbench-id> --with-guides --out construction.png'},commands:['icon list','icon grid','icon shape','icon build <name|mark.json> --dir <new-directory>','icon apply <name|mark.json>'],names:Object.keys(ICONS),kinds:['ui','app'],plates:['rounded','circle','square','none'],custom:{name:'Custom mark',paths:[{name:'mark',d:'M4 12h16',fill:false}]},coordinates:'24 × 24 source grid',outputs:['icon.svg','construction.svg','figma.json','icon.json','preview.html']},
       design:{commands:['prepare','generate','accept','import','apply','recover','capture','compare','status'],kinds:['ui','icon','appicon'],generation:{tool:'image_gen',execution:'host-agent-tool',handoffProtocol:'figma-agent-imagegen-v1',providerRequired:false,accept:'design accept <job> <output.png> --generation-id <id> --result-ref <tool-result>',provenance:'Agent-reported tool result; local image bytes are validated and hashed'},persistence:'job.json plus exclusive process lock',verification:'live export and editability audit; pixel metrics do not establish visual fidelity'},

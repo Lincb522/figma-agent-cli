@@ -28,6 +28,18 @@
 
 所以自己做了一套 **CLI + Figma 插件 + Skill**。让 Codex 调用 Figma 画界面、做图标、调整细节，再导出结果检查。换个对话，也能接着用。
 
+## 设计之后，接着写代码
+
+设计或复刻完成后，可以把代码参考直接交回 Codex：
+
+> 把这个画板转成代码参考，放进当前项目，再按项目现有技术栈实现。
+
+会一起导出 HTML/CSS、可选 React 组件、图片与 SVG、图层结构，以及 Figma 原图。Codex 能对照它们继续开发。生成的是设计参考；响应式布局、业务逻辑和交互仍由 Codex 结合项目完成。
+
+```sh
+node dist/cli.js code export <画板ID> --dir ./design-reference/home --format react
+```
+
 ## 开始使用
 
 准备好 **Codex、Figma 桌面版和 [Node.js 22+](https://nodejs.org/)**。下面以 macOS 为例，使用系统自带的 `curl` 和 `tar`。

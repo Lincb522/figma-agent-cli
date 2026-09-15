@@ -66,5 +66,19 @@ test('built CLI creates, retries once, executes, and exports through the real br
   (f.api as any).base64Encode = (value: Uint8Array) => Buffer.from(value).toString('base64');
   const output = resolve(dir, 'preview.png');
   const exported = await drive(['export', id, '--out', output]); assert.equal(exported.code, 0); assert.deepEqual(await readFile(output), png);
+  // Exercise the collector serialized by the production bundle, through eval and export.
+  const codeRoot = f.nodes.get(id);
+  codeRoot.children = [];
+  codeRoot.getCSSAsync = async () => ({ width: '390px' });
+  const codeResponse = cli(['code','export',id,'--dir',resolve(dir,'code-reference'),'--format','react']);
+  for (let i=0;i<3;i++) {
+    const {command}=await http('/plugin/poll',{},paired.token);
+    let reply:any;
+    try {reply={ok:true,id:command.id,result:await execute(f.api,command)};}
+    catch(error){reply={ok:false,id:command.id,error:fault(error)};}
+    await http('/plugin/result',reply,paired.token);
+  }
+  const codeResult=await codeResponse;assert.equal(codeResult.code,0,codeResult.stderr);
+  assert.match(await readFile(resolve(dir,'code-reference','FigmaDesign.tsx'),'utf8'),/function FigmaDesign/);
   const failed = await drive(['export', 'missing-node', '--out', output]); assert.equal(failed.code, 1); assert.equal(JSON.parse(failed.stdout).error.code, 'NODE_NOT_FOUND'); assert.deepEqual(await readFile(output), png);
 });
