@@ -1,0 +1,132 @@
+{
+  "ok": true,
+  "id": "e058cf6b-7bed-4708-8424-5a347e94cb62",
+  "result": {
+    "board": "29:1739",
+    "dimensions": {
+      "width": 1254,
+      "height": 1254
+    },
+    "artwork": "29:1758",
+    "relativeColorPositionsPreserved": true,
+    "iconCenter": {
+      "x": 627,
+      "y": 627
+    },
+    "guide": {
+      "id": "29:1740",
+      "locked": true,
+      "parent": "29:1739",
+      "childCount": 17
+    },
+    "booleans": [
+      {
+        "id": "29:1759",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1760",
+            "type": "BOOLEAN_OPERATION"
+          },
+          {
+            "id": "29:1764",
+            "type": "VECTOR"
+          }
+        ]
+      },
+      {
+        "id": "29:1760",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1761",
+            "type": "ELLIPSE"
+          },
+          {
+            "id": "29:1762",
+            "type": "RECTANGLE"
+          },
+          {
+            "id": "29:1763",
+            "type": "VECTOR"
+          }
+        ]
+      },
+      {
+        "id": "29:1765",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1766",
+            "type": "BOOLEAN_OPERATION"
+          },
+          {
+            "id": "29:1770",
+            "type": "VECTOR"
+          }
+        ]
+      },
+      {
+        "id": "29:1766",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1767",
+            "type": "ELLIPSE"
+          },
+          {
+            "id": "29:1768",
+            "type": "RECTANGLE"
+          },
+          {
+            "id": "29:1769",
+            "type": "VECTOR"
+          }
+        ]
+      },
+      {
+        "id": "29:1771",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1772",
+            "type": "BOOLEAN_OPERATION"
+          },
+          {
+            "id": "29:1776",
+            "type": "VECTOR"
+          }
+        ]
+      },
+      {
+        "id": "29:1772",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1773",
+            "type": "ELLIPSE"
+          },
+          {
+            "id": "29:1774",
+            "type": "RECTANGLE"
+          },
+          {
+            "id": "29:1775",
+            "type": "VECTOR"
+          }
+        ]
+      }
+    ],
+    "cleanOriginalExists": true,
+    "explodedBoardExists": true,
+    "selection": [
+      "29:1739"
+    ]
+  }
+}

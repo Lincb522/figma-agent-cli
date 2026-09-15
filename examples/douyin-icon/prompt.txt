@@ -1,0 +1,7 @@
+Create one small UI icon with a readable silhouette as a visual reference generated with image_gen. Canvas 1024 x 1024 pixels, PNG. Straight-on artwork, no device shell, captions or presentation mockup. Keep simple forms, deliberate negative space and clear small-size readability. The base and mark will be reconstructed as separate editable Figma vector/boolean layers.
+
+Brief:
+Use case: logo-brand. Generate a single classic Douyin/TikTok musical-note icon reference, centered on a pure white 1024 by 1024 square. Main note is solid black with a vertical stem, curved lower note bowl and a flag sweeping to the right at top. Crisp cyan offset edges to upper-left and red offset edges to lower-right, faithful recognizable classic silhouette. Flat vector-like graphic, generous white margins, no words, no captions, no gradients, no shadows, no grid, no node markers. This raster reference will be reconstructed in Figma using editable native vector operands and Boolean operations.
+
+Background correction (built-in image_gen edit, referenced the first generated PNG):
+Edit this generated Douyin logo reference. Preserve the exact musical-note silhouette, proportions, position, solid black main note and cyan/red offset edges. Change only the background: composite onto a fully opaque pure white square background, including all negative-space holes. No transparency anywhere. No additional graphic, text, border or shadows. Crisp flat logo reference.

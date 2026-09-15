@@ -1,0 +1,158 @@
+{
+  "nodes": [
+    {
+      "key": "screen",
+      "type": "FRAME",
+      "props": {
+        "name": "抖音 · 原生布尔成品",
+        "width": 1254,
+        "height": 1254,
+        "fills": []
+      },
+      "children": [
+        {
+          "key": "base",
+          "type": "RECTANGLE",
+          "props": {
+            "name": "Base / White",
+            "width": 1254,
+            "height": 1254,
+            "fills": [
+              {
+                "type": "SOLID",
+                "color": {
+                  "r": 1,
+                  "g": 1,
+                  "b": 1
+                }
+              }
+            ],
+            "locked": true
+          }
+        },
+        {
+          "key": "artwork",
+          "type": "FRAME",
+          "props": {
+            "name": "Artwork",
+            "width": 1254,
+            "height": 1254,
+            "fills": [],
+            "clipsContent": false
+          },
+          "children": [
+            {
+              "key": "Outer bowl",
+              "type": "ELLIPSE",
+              "props": {
+                "name": "Outer bowl",
+                "x": 294,
+                "y": 566,
+                "width": 466,
+                "height": 450,
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.12,
+                      "g": 0.12,
+                      "b": 0.12
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "Stem",
+              "type": "RECTANGLE",
+              "props": {
+                "name": "Stem",
+                "x": 650,
+                "y": 272,
+                "width": 110,
+                "height": 519,
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.12,
+                      "g": 0.12,
+                      "b": 0.12
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "key": "Flag",
+              "type": "VECTOR",
+              "props": {
+                "name": "Flag",
+                "x": 760,
+                "y": 272,
+                "width": 200,
+                "height": 295,
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.12,
+                      "g": 0.12,
+                      "b": 0.12
+                    }
+                  }
+                ],
+                "vectorPaths": [
+                  {
+                    "windingRule": "NONZERO",
+                    "data": "M 0 0 C 4 98 81 180 200 184 L 200 294 C 126 298 52 269 0 230 Z"
+                  }
+                ]
+              }
+            },
+            {
+              "key": "Cutter / Inner cavity",
+              "type": "VECTOR",
+              "props": {
+                "name": "Cutter / Inner cavity",
+                "x": 399,
+                "y": 530,
+                "width": 251,
+                "height": 387,
+                "fills": [
+                  {
+                    "type": "SOLID",
+                    "color": {
+                      "r": 0.9,
+                      "g": 0.5,
+                      "b": 0.1
+                    }
+                  }
+                ],
+                "vectorPaths": [
+                  {
+                    "windingRule": "NONZERO",
+                    "data": "M 141 144 C 67 130 0 181 0 254 C 0 327 56 387 121 387 C 193 387 251 338 251 261 L 251 0 L 141 0 Z"
+                  }
+                ],
+                "opacity": 0.6
+              }
+            }
+          ]
+        },
+        {
+          "key": "guides",
+          "type": "FRAME",
+          "props": {
+            "name": "Guides / Construction only",
+            "width": 1254,
+            "height": 1254,
+            "fills": [],
+            "visible": false,
+            "locked": true
+          }
+        }
+      ]
+    }
+  ]
+}

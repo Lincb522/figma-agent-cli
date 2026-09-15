@@ -1,0 +1,270 @@
+{
+  "ok": true,
+  "id": "3cbcc73a-c60e-4d8e-88fd-a19ddde73d5f",
+  "result": {
+    "root": "29:1567",
+    "page": "29:1566",
+    "artwork": {
+      "id": "29:1569",
+      "name": "Artwork",
+      "type": "FRAME",
+      "operands": [
+        {
+          "id": "29:1578",
+          "name": "Cyan note / SUBTRACT",
+          "type": "BOOLEAN_OPERATION",
+          "operation": "SUBTRACT",
+          "operands": [
+            {
+              "id": "29:1579",
+              "name": "Body / UNION",
+              "type": "BOOLEAN_OPERATION",
+              "operation": "UNION",
+              "operands": [
+                {
+                  "id": "29:1580",
+                  "name": "Outer bowl",
+                  "type": "ELLIPSE"
+                },
+                {
+                  "id": "29:1581",
+                  "name": "Stem",
+                  "type": "RECTANGLE"
+                },
+                {
+                  "id": "29:1582",
+                  "name": "Flag",
+                  "type": "VECTOR"
+                }
+              ]
+            },
+            {
+              "id": "29:1583",
+              "name": "Cutter / Inner cavity",
+              "type": "VECTOR"
+            }
+          ]
+        },
+        {
+          "id": "29:1584",
+          "name": "Red note / SUBTRACT",
+          "type": "BOOLEAN_OPERATION",
+          "operation": "SUBTRACT",
+          "operands": [
+            {
+              "id": "29:1585",
+              "name": "Body / UNION",
+              "type": "BOOLEAN_OPERATION",
+              "operation": "UNION",
+              "operands": [
+                {
+                  "id": "29:1586",
+                  "name": "Outer bowl",
+                  "type": "ELLIPSE"
+                },
+                {
+                  "id": "29:1587",
+                  "name": "Stem",
+                  "type": "RECTANGLE"
+                },
+                {
+                  "id": "29:1588",
+                  "name": "Flag",
+                  "type": "VECTOR"
+                }
+              ]
+            },
+            {
+              "id": "29:1589",
+              "name": "Cutter / Inner cavity",
+              "type": "VECTOR"
+            }
+          ]
+        },
+        {
+          "id": "29:1577",
+          "name": "Black note / SUBTRACT",
+          "type": "BOOLEAN_OPERATION",
+          "operation": "SUBTRACT",
+          "operands": [
+            {
+              "id": "29:1576",
+              "name": "Body / UNION",
+              "type": "BOOLEAN_OPERATION",
+              "operation": "UNION",
+              "operands": [
+                {
+                  "id": "29:1570",
+                  "name": "Outer bowl",
+                  "type": "ELLIPSE"
+                },
+                {
+                  "id": "29:1571",
+                  "name": "Stem",
+                  "type": "RECTANGLE"
+                },
+                {
+                  "id": "29:1572",
+                  "name": "Flag",
+                  "type": "VECTOR"
+                }
+              ]
+            },
+            {
+              "id": "29:1573",
+              "name": "Cutter / Inner cavity",
+              "type": "VECTOR"
+            }
+          ]
+        }
+      ]
+    },
+    "booleanCount": 6,
+    "operations": [
+      {
+        "id": "29:1578",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1579",
+            "type": "BOOLEAN_OPERATION",
+            "name": "Body / UNION"
+          },
+          {
+            "id": "29:1583",
+            "type": "VECTOR",
+            "name": "Cutter / Inner cavity"
+          }
+        ]
+      },
+      {
+        "id": "29:1579",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1580",
+            "type": "ELLIPSE",
+            "name": "Outer bowl"
+          },
+          {
+            "id": "29:1581",
+            "type": "RECTANGLE",
+            "name": "Stem"
+          },
+          {
+            "id": "29:1582",
+            "type": "VECTOR",
+            "name": "Flag"
+          }
+        ]
+      },
+      {
+        "id": "29:1584",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1585",
+            "type": "BOOLEAN_OPERATION",
+            "name": "Body / UNION"
+          },
+          {
+            "id": "29:1589",
+            "type": "VECTOR",
+            "name": "Cutter / Inner cavity"
+          }
+        ]
+      },
+      {
+        "id": "29:1585",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1586",
+            "type": "ELLIPSE",
+            "name": "Outer bowl"
+          },
+          {
+            "id": "29:1587",
+            "type": "RECTANGLE",
+            "name": "Stem"
+          },
+          {
+            "id": "29:1588",
+            "type": "VECTOR",
+            "name": "Flag"
+          }
+        ]
+      },
+      {
+        "id": "29:1577",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "SUBTRACT",
+        "operands": [
+          {
+            "id": "29:1576",
+            "type": "BOOLEAN_OPERATION",
+            "name": "Body / UNION"
+          },
+          {
+            "id": "29:1573",
+            "type": "VECTOR",
+            "name": "Cutter / Inner cavity"
+          }
+        ]
+      },
+      {
+        "id": "29:1576",
+        "type": "BOOLEAN_OPERATION",
+        "operation": "UNION",
+        "operands": [
+          {
+            "id": "29:1570",
+            "type": "ELLIPSE",
+            "name": "Outer bowl"
+          },
+          {
+            "id": "29:1571",
+            "type": "RECTANGLE",
+            "name": "Stem"
+          },
+          {
+            "id": "29:1572",
+            "type": "VECTOR",
+            "name": "Flag"
+          }
+        ]
+      }
+    ],
+    "vectorCount": 6,
+    "vectorVertexCount": 30,
+    "imageFillCount": 0,
+    "separateLayers": [
+      {
+        "id": "29:1568",
+        "name": "Base / White",
+        "type": "RECTANGLE",
+        "visible": true,
+        "locked": true
+      },
+      {
+        "id": "29:1569",
+        "name": "Artwork",
+        "type": "FRAME",
+        "visible": true,
+        "locked": false
+      },
+      {
+        "id": "29:1574",
+        "name": "Guides / Construction only",
+        "type": "FRAME",
+        "visible": false,
+        "locked": true
+      }
+    ],
+    "verification": "Native Boolean hierarchy and editable operands read back from Figma; native point editing mode requires desktop Enter on a selected Vector."
+  }
+}

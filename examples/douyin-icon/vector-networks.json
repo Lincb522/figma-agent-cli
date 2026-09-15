@@ -1,0 +1,1330 @@
+{
+  "ok": true,
+  "id": "0bf53553-4c08-44d7-9f2b-d758b36fb379",
+  "result": {
+    "board": "29:1592",
+    "sourceVectorCount": 6,
+    "records": [
+      {
+        "sourceId": "29:1582",
+        "name": "Flag",
+        "colorLayer": "Cyan note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            719
+          ],
+          [
+            0,
+            1,
+            239
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 0,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 184,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 294,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 230,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": 4,
+                "y": 98
+              },
+              "tangentEnd": {
+                "x": -119,
+                "y": -4
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": -74,
+                "y": 4
+              },
+              "tangentEnd": {
+                "x": 52,
+                "y": 39
+              }
+            },
+            {
+              "start": 3,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.11999999731779099,
+                    "g": 0.11999999731779099,
+                    "b": 0.11999999731779099
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1595",
+          "scale": 1.476510067114094,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": 4,
+                "y": 98
+              },
+              "display": {
+                "x": 65.90604026845638,
+                "y": 246.6979865771812
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": -119,
+                "y": -4
+              },
+              "display": {
+                "x": 179.5973154362416,
+                "y": 367.77181208053696
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": 4
+              },
+              "display": {
+                "x": 246.04026845637583,
+                "y": 542.0000000000001
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 52,
+                "y": 39
+              },
+              "display": {
+                "x": 136.7785234899329,
+                "y": 499.1812080536913
+              }
+            }
+          ]
+        }
+      },
+      {
+        "sourceId": "29:1583",
+        "name": "Cutter / Inner cavity",
+        "colorLayer": "Cyan note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            358
+          ],
+          [
+            0,
+            1,
+            497
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 141,
+              "y": 144,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 254,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 121,
+              "y": 387,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 261,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 141,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": -74,
+                "y": -14
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": -73
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 73
+              },
+              "tangentEnd": {
+                "x": -65,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": 72,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 77
+              }
+            },
+            {
+              "start": 3,
+              "end": 4,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 4,
+              "end": 5,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 5,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.8999999761581421,
+                    "g": 0.5,
+                    "b": 0.10000000149011612
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1615",
+          "scale": 1.1369509043927648,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": -14
+              },
+              "display": {
+                "x": 136.17571059431523,
+                "y": 249.80361757105945
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": -73
+              },
+              "display": {
+                "x": 60,
+                "y": 307.78811369509043
+              }
+            },
+            {
+              "segment": 1,
+              "end": "start",
+              "vector": {
+                "x": 0,
+                "y": 73
+              },
+              "display": {
+                "x": 60,
+                "y": 473.7829457364341
+              }
+            },
+            {
+              "segment": 1,
+              "end": "end",
+              "vector": {
+                "x": -65,
+                "y": 0
+              },
+              "display": {
+                "x": 123.66925064599482,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": 72,
+                "y": 0
+              },
+              "display": {
+                "x": 279.43152454780363,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": 77
+              },
+              "display": {
+                "x": 345.37467700258395,
+                "y": 486.2894056847545
+              }
+            }
+          ]
+        }
+      },
+      {
+        "sourceId": "29:1588",
+        "name": "Flag",
+        "colorLayer": "Red note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            800
+          ],
+          [
+            0,
+            1,
+            304
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 0,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 184,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 294,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 230,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": 4,
+                "y": 98
+              },
+              "tangentEnd": {
+                "x": -119,
+                "y": -4
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": -74,
+                "y": 4
+              },
+              "tangentEnd": {
+                "x": 52,
+                "y": 39
+              }
+            },
+            {
+              "start": 3,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.11999999731779099,
+                    "g": 0.11999999731779099,
+                    "b": 0.11999999731779099
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1643",
+          "scale": 1.476510067114094,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": 4,
+                "y": 98
+              },
+              "display": {
+                "x": 65.90604026845638,
+                "y": 246.6979865771812
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": -119,
+                "y": -4
+              },
+              "display": {
+                "x": 179.5973154362416,
+                "y": 367.77181208053696
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": 4
+              },
+              "display": {
+                "x": 246.04026845637583,
+                "y": 542.0000000000001
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 52,
+                "y": 39
+              },
+              "display": {
+                "x": 136.7785234899329,
+                "y": 499.1812080536913
+              }
+            }
+          ]
+        }
+      },
+      {
+        "sourceId": "29:1589",
+        "name": "Cutter / Inner cavity",
+        "colorLayer": "Red note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            439
+          ],
+          [
+            0,
+            1,
+            562
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 141,
+              "y": 144,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 254,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 121,
+              "y": 387,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 261,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 141,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": -74,
+                "y": -14
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": -73
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 73
+              },
+              "tangentEnd": {
+                "x": -65,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": 72,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 77
+              }
+            },
+            {
+              "start": 3,
+              "end": 4,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 4,
+              "end": 5,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 5,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.8999999761581421,
+                    "g": 0.5,
+                    "b": 0.10000000149011612
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1663",
+          "scale": 1.1369509043927648,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": -14
+              },
+              "display": {
+                "x": 136.17571059431523,
+                "y": 249.80361757105945
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": -73
+              },
+              "display": {
+                "x": 60,
+                "y": 307.78811369509043
+              }
+            },
+            {
+              "segment": 1,
+              "end": "start",
+              "vector": {
+                "x": 0,
+                "y": 73
+              },
+              "display": {
+                "x": 60,
+                "y": 473.7829457364341
+              }
+            },
+            {
+              "segment": 1,
+              "end": "end",
+              "vector": {
+                "x": -65,
+                "y": 0
+              },
+              "display": {
+                "x": 123.66925064599482,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": 72,
+                "y": 0
+              },
+              "display": {
+                "x": 279.43152454780363,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": 77
+              },
+              "display": {
+                "x": 345.37467700258395,
+                "y": 486.2894056847545
+              }
+            }
+          ]
+        }
+      },
+      {
+        "sourceId": "29:1572",
+        "name": "Flag",
+        "colorLayer": "Black note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            760
+          ],
+          [
+            0,
+            1,
+            272
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 0,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 184,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 200,
+              "y": 294,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 230,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": 4,
+                "y": 98
+              },
+              "tangentEnd": {
+                "x": -119,
+                "y": -4
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": -74,
+                "y": 4
+              },
+              "tangentEnd": {
+                "x": 52,
+                "y": 39
+              }
+            },
+            {
+              "start": 3,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.11999999731779099,
+                    "g": 0.11999999731779099,
+                    "b": 0.11999999731779099
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1691",
+          "scale": 1.476510067114094,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": 4,
+                "y": 98
+              },
+              "display": {
+                "x": 65.90604026845638,
+                "y": 246.6979865771812
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": -119,
+                "y": -4
+              },
+              "display": {
+                "x": 179.5973154362416,
+                "y": 367.77181208053696
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": 4
+              },
+              "display": {
+                "x": 246.04026845637583,
+                "y": 542.0000000000001
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 52,
+                "y": 39
+              },
+              "display": {
+                "x": 136.7785234899329,
+                "y": 499.1812080536913
+              }
+            }
+          ]
+        }
+      },
+      {
+        "sourceId": "29:1573",
+        "name": "Cutter / Inner cavity",
+        "colorLayer": "Black note / SUBTRACT",
+        "absoluteTransform": [
+          [
+            1,
+            0,
+            399
+          ],
+          [
+            0,
+            1,
+            530
+          ]
+        ],
+        "vectorNetwork": {
+          "vertices": [
+            {
+              "x": 141,
+              "y": 144,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 0,
+              "y": 254,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 121,
+              "y": 387,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 261,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 251,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            },
+            {
+              "x": 141,
+              "y": 0,
+              "strokeCap": "NONE",
+              "strokeJoin": "MITER",
+              "cornerRadius": 0,
+              "handleMirroring": "NONE"
+            }
+          ],
+          "segments": [
+            {
+              "start": 0,
+              "end": 1,
+              "tangentStart": {
+                "x": -74,
+                "y": -14
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": -73
+              }
+            },
+            {
+              "start": 1,
+              "end": 2,
+              "tangentStart": {
+                "x": 0,
+                "y": 73
+              },
+              "tangentEnd": {
+                "x": -65,
+                "y": 0
+              }
+            },
+            {
+              "start": 2,
+              "end": 3,
+              "tangentStart": {
+                "x": 72,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 77
+              }
+            },
+            {
+              "start": 3,
+              "end": 4,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 4,
+              "end": 5,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            },
+            {
+              "start": 5,
+              "end": 0,
+              "tangentStart": {
+                "x": 0,
+                "y": 0
+              },
+              "tangentEnd": {
+                "x": 0,
+                "y": 0
+              }
+            }
+          ],
+          "regions": [
+            {
+              "windingRule": "NONZERO",
+              "loops": [
+                [
+                  0,
+                  1,
+                  2,
+                  3,
+                  4,
+                  5
+                ]
+              ],
+              "fillStyleId": "",
+              "fills": [
+                {
+                  "type": "SOLID",
+                  "visible": true,
+                  "opacity": 1,
+                  "blendMode": "NORMAL",
+                  "color": {
+                    "r": 0.8999999761581421,
+                    "g": 0.5,
+                    "b": 0.10000000149011612
+                  },
+                  "boundVariables": {}
+                }
+              ]
+            }
+          ]
+        },
+        "display": {
+          "tileId": "29:1711",
+          "scale": 1.1369509043927648,
+          "minX": 0,
+          "minY": 0,
+          "controls": [
+            {
+              "segment": 0,
+              "end": "start",
+              "vector": {
+                "x": -74,
+                "y": -14
+              },
+              "display": {
+                "x": 136.17571059431523,
+                "y": 249.80361757105945
+              }
+            },
+            {
+              "segment": 0,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": -73
+              },
+              "display": {
+                "x": 60,
+                "y": 307.78811369509043
+              }
+            },
+            {
+              "segment": 1,
+              "end": "start",
+              "vector": {
+                "x": 0,
+                "y": 73
+              },
+              "display": {
+                "x": 60,
+                "y": 473.7829457364341
+              }
+            },
+            {
+              "segment": 1,
+              "end": "end",
+              "vector": {
+                "x": -65,
+                "y": 0
+              },
+              "display": {
+                "x": 123.66925064599482,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "start",
+              "vector": {
+                "x": 72,
+                "y": 0
+              },
+              "display": {
+                "x": 279.43152454780363,
+                "y": 542
+              }
+            },
+            {
+              "segment": 2,
+              "end": "end",
+              "vector": {
+                "x": 0,
+                "y": 77
+              },
+              "display": {
+                "x": 345.37467700258395,
+                "y": 486.2894056847545
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
