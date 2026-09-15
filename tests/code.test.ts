@@ -34,6 +34,8 @@ test('handoff writes assets and source together; existing code and changed desig
   const base=await mkdtemp(join(tmpdir(),'figma-code-'));t.after(()=>rm(base,{recursive:true,force:true}));
   const dir=join(base,'handoff');const result=await exportCode(dir,'1:1','react','session',transport());
   assert.equal(result.entry,join(dir,'FigmaDesign.tsx'));
+  assert.equal(result.instructions,join(dir,'HANDOFF.md'));
+  assert.match(await readFile(result.instructions,'utf8'),/handoff.json/);
   const manifest=JSON.parse(await readFile(result.manifest,'utf8'));assert.equal(manifest.assets.length,1);
   assert.equal(await readFile(join(dir,manifest.assets[0].path),'utf8'),svg);
   await writeFile(join(dir,'FigmaDesign.tsx'),'user edit');

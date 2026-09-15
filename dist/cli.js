@@ -3219,7 +3219,7 @@ async function collectCodeDesign(api, id) {
 var CODE_EXPORT = {
   command: "code export [node-id] --dir <new-directory> [--format html|react]",
   formats: ["html", "react"],
-  outputs: ["index.html", "styles.css", "design.json", "preview.png", "assets/", "CODEX.md", "handoff.json"],
+  outputs: ["index.html", "styles.css", "design.json", "preview.png", "assets/", "HANDOFF.md", "handoff.json"],
   fidelity: "Fixed-size visual reference with native text and local assets; not a finished responsive application."
 };
 var escapeHTML = (s) => s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -3338,7 +3338,7 @@ async function exportCode(directory, id, format, sessionId, transport) {
   try {
     await mkdir(dir);
   } catch (e) {
-    if (e.code === "EEXIST") throw new AgentError("CODE_DIRECTORY_EXISTS", "Code export requires a new directory; existing code was preserved.", "Choose a new --dir, then review changes in Codex.");
+    if (e.code === "EEXIST") throw new AgentError("CODE_DIRECTORY_EXISTS", "Code export requires a new directory; existing code was preserved.", "Choose a new --dir, then review changes with your agent.");
     throw e;
   }
   let stage;
@@ -3371,7 +3371,7 @@ async function exportCode(directory, id, format, sessionId, transport) {
     if (result.react) await writeFile(join(stage, "FigmaDesign.tsx"), result.react);
     await writeFile(join(stage, "design.json"), JSON.stringify(snapshot, null, 2) + "\n");
     await writeFile(join(stage, "handoff.json"), JSON.stringify(handoff, null, 2) + "\n");
-    await writeFile(join(stage, "CODEX.md"), `# Figma design reference
+    await writeFile(join(stage, "HANDOFF.md"), `# Figma design reference
 
 Read handoff.json and design.json, then compare index.html with the actual Figma preview.png. The generated code is a fixed-size reference at ${handoff.width} \xD7 ${handoff.height}, not a finished responsive application.
 
@@ -3383,7 +3383,7 @@ Review warnings in handoff.json before using the code. Verify against preview.pn
 `);
     await rename(stage, dir);
     stage = void 0;
-    return { directory: dir, entry: resolve(dir, handoff.entry), preview: resolve(dir, "preview.png"), instructions: resolve(dir, "CODEX.md"), manifest: resolve(dir, "handoff.json"), warnings: result.warnings, next: "Read CODEX.md and design.json in this Codex task, view preview.png, and implement using the current project conventions." };
+    return { directory: dir, entry: resolve(dir, handoff.entry), preview: resolve(dir, "preview.png"), instructions: resolve(dir, "HANDOFF.md"), manifest: resolve(dir, "handoff.json"), warnings: result.warnings, next: "Read HANDOFF.md and design.json in the current agent task, view preview.png, and implement using the current project conventions." };
   } catch (e) {
     await rmdir(dir).catch(() => {
     });
@@ -4345,7 +4345,7 @@ async function compareReference(directory, renderPath) {
 
 // src/cli/main.ts
 var root = resolve6(dirname6(fileURLToPath(import.meta.url)), "..");
-var usage = `Figma Agent CLI 0.7.0
+var usage = `Figma Agent CLI 0.7.1
 
 Usage: figma-agent <command> [arguments] [options]
 
@@ -4363,7 +4363,7 @@ Usage: figma-agent <command> [arguments] [options]
   select <node-id...>             Select and zoom to nodes on the current page
   export [node-id] --out <path>   Write PNG/JPG/SVG/PDF from the live Figma canvas
   code export [node-id] --dir <new-directory> [--format html|react]
-                                 Write a code reference and Codex handoff from Figma
+                                 Write a code reference and agent handoff from Figma
   image <image-file>              Insert a local image (--parent, --width, --height)
   exec <script.js>                Execute JavaScript with figma, h and args
   variables | styles             Read the file's design tokens and styles
@@ -4434,7 +4434,7 @@ Use node "${resolve6(root, "dist/cli.js")}" <command> from any directory.
 4. Use apply for editable frame/component/text/shape trees. Save returned IDs and key mappings.
 5. Use patch for focused edits. exec exposes the full Figma Plugin API for variants, variables, component instances, vectors, constraints, prototypes, and advanced layout.
 6. Use export <frame-id> --out preview.png. Open that ACTUAL image with your image-viewing tool; check hierarchy, alignment, clipping, text, spacing, and narrow/wide variants. Adjust and export again where needed.
-7. After the design or reconstruction is verified, use code export <frame-id> --dir <new-directory-in-the-current-project> --format react (or html) when handing it to implementation. Read the returned CODEX.md, design.json and handoff.json, and view preview.png. Adapt this visual reference to the current project; do not treat fixed-size CSS as a finished responsive app or stored reactions as running interactions.
+7. After the design or reconstruction is verified, use code export <frame-id> --dir <new-directory-in-the-current-project> --format react (or html) when handing it to implementation. Read the returned HANDOFF.md, design.json and handoff.json, and view preview.png. Adapt this visual reference to the current project; do not treat fixed-size CSS as a finished responsive app or stored reactions as running interactions.
 8. Report the created node IDs, exported image paths, code handoff path and any Figma runtime limitations honestly.
 
 For interactive prototypes, use prototype get <node-id> before edits and prototype set <node-id> <reactions.json> to replace its native Reaction[]; retain unrelated interactions. prototype clear removes all interactions from one node. Use actions[] (not deprecated action). Times are seconds (0.3 = 300 ms), instant transitions use null. schema.prototype lists triggers, navigation, animation and easing options. Build matching named layers for SMART_ANIMATE. For CHANGE_TO create main component variants in one component set via exec and figma.combineAsVariants; place an instance in a frame for preview. h.prototype(id, reactions) uses the same validated setter from exec. See examples/interactive-toggle.js for a complete editable example. Read reactions back after setting; select the preview frame and use Figma Present to test clicks, hover, return paths and intermediate animation. A PNG export or stored reaction does not prove playback. Never replay an uncertain prototype write or demo creation.

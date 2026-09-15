@@ -38,7 +38,7 @@ try {
     catch (error) { if (backup) await rename(backup, target); throw error; }
   }
   if (backup) console.log(`Previous skill saved: ${backup}`);
-  console.log(`Installed figma-agent: ${target}\nCLI: ${join(project, 'dist/cli.js')}\nUse $figma-agent in Codex with your design request.`);
+  console.log(`Installed figma-agent: ${target}\nCLI: ${join(project, 'dist/cli.js')}\nLoad figma-agent in your agent with your design request. Codex users can use $figma-agent.`);
   if (values.setup) execFileSync(process.execPath, [join(target, 'scripts/setup.mjs'), ...(!existing ? ['--pair'] : [])], { stdio: 'inherit' });
 } catch (error) {
   console.error(error.message); process.exitCode = 1;

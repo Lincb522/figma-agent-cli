@@ -18,7 +18,7 @@
 <div class="status-row" role="status" aria-live="polite"><span class="dot" id="dot"></span><span id="status">未连接</span></div>
 <section class="document" aria-label="当前 Figma 文件"><span class="label">当前文件</span><div class="file" id="document">等待 Figma 文档</div><div class="page" id="page">打开设计文件后连接</div></section>
 <form id="pair-form" onsubmit="return false">
-<p>首次使用时，让 Codex 获取配对码，或在项目目录启动 CLI。</p>
+<p>首次使用时，让 Agent 获取配对码，或在项目目录启动 CLI。</p>
 <div class="command"><code>npm start</code></div>
 <label for="code">六位配对码</label><div class="pair-row"><input id="code" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="off" placeholder="••••••" required aria-describedby="code-hint"><button class="primary" id="connect" type="submit" disabled>连接</button></div>
 <p class="hint" id="code-hint">绑定一次，此设备上的其他文件也能自动连接。配对码 10 分钟内有效：<code>npm run cli -- pair</code></p>

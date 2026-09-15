@@ -125,7 +125,7 @@ async function resume(retired: Promise<unknown> = Promise.resolve(), notice = ''
       if (e instanceof ConnectionError && e.code === 'AUTHORIZATION_REVOKED') {
         resumeToken = '';
         try { await storage('delete'); } catch { /* The invalid grant cannot authorize another connection. */ }
-        disconnected('此设备的绑定已失效。让 Codex 获取新配对码，再填写一次即可。'); return;
+        disconnected('此设备的绑定已失效。让 Agent 获取新配对码，再填写一次即可。'); return;
       }
       if (e instanceof ConnectionError && ['CONTEXT_TIMEOUT', 'CONTEXT_FAILED', 'STARTUP_FAILED'].includes(e.code)) { disconnected(e.message); showDiagnostics(); return; }
       error('本地 CLI 暂时不可用，正在自动重连。启动 CLI 后会恢复，无需新配对码。');

@@ -1,13 +1,15 @@
 ---
 name: figma-agent
-description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板、布尔造型与原型交互动画，支持先 image_gen 生图再复刻，以及导出代码交接包供 Codex 实现参考。用户要求在 Figma 中设计、修改或复刻，把设计转代码或写回项目，连接 Figma Agent，添加点击、悬停、弹层、Smart Animate 或组件状态动画，或明确调用 figma-agent 时使用。"
+description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板、布尔造型与原型交互动画，支持先 image_gen 生图再复刻，以及导出代码交接包供 Agent 实现参考。用户要求在 Figma 中设计、修改或复刻，把设计转代码或写回项目，连接 Figma Agent，添加点击、悬停、弹层、Smart Animate 或组件状态动画，或明确调用 figma-agent 时使用。"
 metadata:
-  version: "0.7.0"
+  version: "0.7.1"
 ---
 
 # Figma Agent
 
 Use the local CLI and paired Figma development plugin. This skill supplies the installed tool location and workflow across conversations; the invoking agent performs the design work.
+
+The host must be able to run the local Node CLI and read/write project files. Load this SKILL.md through the host's supported mechanism; `$figma-agent` is Codex invocation syntax, not a CLI requirement. For hosts without skill discovery, explicitly read this file and run the CLI's `agent` guide. Image generation requires the named tool in the host; supplied reference images can still use `design import` without it.
 
 ## Install and locate the tool
 
@@ -68,17 +70,17 @@ Use the installed `agent` guide as the maintained command reference. Execute the
 
 Save task layouts, scripts, returned node IDs, and exports in a task-specific directory in the current user workspace. Keep reusable CLI source and shipped examples intact during design tasks.
 
-## Hand a completed design back to Codex
+## Hand a completed design back to the agent
 
-After verifying a design or reconstruction, inspect the current project to choose its framework when the task includes code handoff or implementation. Use CLI 0.7.0 or newer for `code export`; this command reuses the existing eval/export bridge protocol and does not require restarting an already compatible bridge. Export the reference into that project:
+After verifying a design or reconstruction, inspect the current project to choose its framework when the task includes code handoff or implementation. Use CLI 0.7.1 or newer for `code export`; this command reuses the existing eval/export bridge protocol and does not require restarting an already compatible bridge. Export the reference into that project:
 
 ```sh
 node <absolute-cli-path> code export <frame-id> --dir <current-project>/design-reference/<new-name> --format react
 ```
 
-Omit the node ID only when exactly one intended node is selected. Use `--format html` for SwiftUI and other non-React projects as a portable visual reference, or `react` for React projects and an additional `FigmaDesign.tsx`; both include `index.html`, styles, local assets, native structure, actual Figma preview and `CODEX.md`. Pick a new directory for each export; existing source files are never overwritten. The CLI prints absolute paths so the invoking Codex task can read the handoff directly, without sending a message to another task.
+Omit the node ID only when exactly one intended node is selected. Use `--format html` for SwiftUI and other non-React projects as a portable visual reference, or `react` for React projects and an additional `FigmaDesign.tsx`; both include `index.html`, styles, local assets, native structure, actual Figma preview and `HANDOFF.md`. Pick a new directory for each export; existing source files are never overwritten. The CLI prints absolute paths so the invoking agent task can read the handoff directly, without sending a message to another task.
 
-Read `CODEX.md`, `handoff.json` and `design.json`, and view `preview.png` before implementation. Choose the target framework from the current project. For SwiftUI or another framework, generate a matching reference implementation alongside the handoff files using the native structure, assets and project conventions; do not claim the CLI emits those languages. Generated HTML/React uses fixed source dimensions as a visual reference. Preserve auto-layout and constraint metadata when building responsive layouts. Prototype reactions, component properties and variable bindings are reference data, not implemented application behavior. Review the exported warnings, fonts and any flattened assets. Only integrate into application source when implementation is part of the user's request.
+Read `HANDOFF.md`, `handoff.json` and `design.json`, and view `preview.png` before implementation. Choose the target framework from the current project. For SwiftUI or another framework, generate a matching reference implementation alongside the handoff files using the native structure, assets and project conventions; do not claim the CLI emits those languages. Generated HTML/React uses fixed source dimensions as a visual reference. Preserve auto-layout and constraint metadata when building responsive layouts. Prototype reactions, component properties and variable bindings are reference data, not implemented application behavior. Review the exported warnings, fonts and any flattened assets. Only integrate into application source when implementation is part of the user's request.
 
 ## Verify and recover
 

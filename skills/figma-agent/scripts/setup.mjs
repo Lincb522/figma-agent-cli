@@ -111,7 +111,7 @@ export async function setup(args = process.argv.slice(2)) {
       const installed = await exec(process.execPath, [join(project, 'scripts/install-skill.mjs'), '--skills-dir', skills], { timeout: 15_000 });
       process.stdout.write(installed.stdout);
     } catch (error) {
-      if (error.stderr?.includes('Skill already exists')) throw new Error(`已有不同版本的 Skill，已保留。请在 ${project} 中运行 npm run skill:install -- --update，备份后升级。`);
+      if (error.stderr?.includes('Skill already exists')) throw new Error(`已有不同版本的 Skill，已保留。请在 ${project} 中运行 scripts/install-skill.mjs，使用 --skills-dir 指定原技能目录并加 --update，备份后升级。`);
       throw error;
     }
   }
@@ -125,7 +125,7 @@ export async function setup(args = process.argv.slice(2)) {
   } else {
     console.log(`当前连接 ${bridge.sessions.result.length} 个设计稿。打开 Figma Agent 后，已保存的绑定会自动恢复。\n首次绑定或需要新码时，用相同 setup 命令加 --pair。`);
   }
-  console.log('回到 Codex，新建对话使用：$figma-agent 帮我设计一个可编辑的 App 首页。');
+  console.log('回到你的 Agent，加载 figma-agent 技能并描述设计需求；Codex 中可使用 $figma-agent。');
   return { project, ...bridge };
 }
 

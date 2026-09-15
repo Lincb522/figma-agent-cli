@@ -4,7 +4,7 @@
 
 # Figma Agent
 
-**在 Codex 里说需求，在 Figma 里得到可编辑的设计。**
+**让 Agent 调用 Figma，把需求变成可编辑的设计。**
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
 ![Node.js 22+](https://img.shields.io/badge/Node.js-22%2B-417E38?style=flat-square&logo=nodedotjs&logoColor=white)
@@ -26,15 +26,17 @@
 
 试过 Figma MCP 和 Codex 自带的 Figma 插件，还是觉得不够顺手，也不够智能。想让 agent 帮我设计，结果经常要自己拆步骤、传信息、反复连接。
 
-所以自己做了一套 **CLI + Figma 插件 + Skill**。让 Codex 调用 Figma 画界面、做图标、调整细节，再导出结果检查。换个对话，也能接着用。
+所以自己做了一套 **CLI + Figma 插件 + Skill**。让 Agent 调用 Figma 画界面、做图标、调整细节，再导出结果检查。换个对话，也能接着用。
+
+任何具备本地命令执行和文件读写能力的 Agent 都可以接入这套 CLI。支持 Skill 的宿主加载技能，不支持的直接读取 CLI 使用指南；不依赖 Codex 账号或 API。
 
 ## 设计之后，接着写代码
 
-设计或复刻完成后，可以把代码参考直接交回 Codex：
+设计或复刻完成后，可以把代码参考直接交回当前 Agent：
 
 > 把这个画板转成代码参考，放进当前项目，再按项目现有技术栈实现。
 
-会一起导出 HTML/CSS、可选 React 组件、图片与 SVG、图层结构，以及 Figma 原图。Codex 能对照它们继续开发。生成的是设计参考；响应式布局、业务逻辑和交互仍由 Codex 结合项目完成。
+会一起导出 HTML/CSS、可选 React 组件、图片与 SVG、图层结构，以及 Figma 原图。Agent 能对照它们继续开发。生成的是设计参考；响应式布局、业务逻辑和交互仍由 Agent 结合项目完成。
 
 ```sh
 node dist/cli.js code export <画板ID> --dir ./design-reference/home --format react
@@ -42,7 +44,7 @@ node dist/cli.js code export <画板ID> --dir ./design-reference/home --format r
 
 ## 开始使用
 
-准备好 **Codex、Figma 桌面版和 [Node.js 22+](https://nodejs.org/)**。下面以 macOS 为例，使用系统自带的 `curl` 和 `tar`。
+准备好 **能执行本地命令、读写项目文件的 Agent、Figma 桌面版和 [Node.js 22+](https://nodejs.org/)**。下面以 macOS 为例，使用系统自带的 `curl` 和 `tar`。
 
 **1. 一条命令安装**
 
@@ -50,20 +52,32 @@ node dist/cli.js code export <画板ID> --dir ./design-reference/home --format r
 curl -fsSL https://raw.githubusercontent.com/Lincb522/figma-agent-cli/main/install.sh | sh
 ```
 
-它会安装 CLI、Figma 插件文件和 Codex Skill，启动后台桥接，然后显示 **六位配对码** 和 **插件文件路径**。无需手动下载仓库、安装 npm 依赖或构建，完成后可以关闭终端。
+默认安装到 Codex 的 Skill 目录，同时安装 CLI、Figma 插件文件，启动后台桥接，然后显示 **六位配对码** 和 **插件文件路径**。无需手动下载仓库、安装 npm 依赖或构建，完成后可以关闭终端。
+
+其他 Agent 可将 Skill 安装到自己支持的目录（替换下面的路径）：
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/Lincb522/figma-agent-cli/main/install.sh | sh -s -- --skills-dir /你的Agent技能目录
+```
 
 **2. 在 Figma 里绑定一次**
 
 打开一个设计稿，进入 **Plugins → Development → Import plugin from manifest…**，选择安装提示里的 `manifest.json`。
 
-运行 **Figma Agent**，输入配对码，点击 **连接**。配对码十分钟内有效；过期后让 Codex 获取新码即可。
+运行 **Figma Agent**，输入配对码，点击 **连接**。配对码十分钟内有效；过期后让 Agent 获取新码即可。
 
-**3. 回到 Codex，说出需求**
+**3. 回到 Agent，说出需求**
 
-安装后新开一个 Codex 对话，输入：
+Codex 用户安装后新开一个对话，输入：
 
 ```text
 $figma-agent 帮我设计一个音乐 App 首页，保留可编辑图层，完成后导出检查。
+```
+
+其他宿主按自身方式加载 `figma-agent/SKILL.md`，然后描述同样的需求。不支持 Skill 的 Agent，可以读取安装后 CLI 的使用指南，按指南调用命令：
+
+```sh
+node /安装时显示的CLI路径 agent
 ```
 
 Skill 会检查工具和连接；工具缺失时自动下载，桥接未启动时自动启动，需要绑定时获取配对码并引导你操作。
@@ -94,7 +108,7 @@ npm run skill:install -- --update
 - **界面设计**：从零画页面，或修改已选中的设计，保留可编辑文字、布局和组件。
 - **图标设计**：小图标、App Icon、Keyline 构造底板，用布尔运算合并、挖空和调整轮廓。
 - **交互动画**：点击、悬停、拖拽、页面跳转、弹层与组件状态切换，配置 Smart Animate、滑入和弹簧缓动，在 Figma 原型预览中操作。
-- **看图复刻**：直接给参考图，或先用 image_gen 生图，再在 Figma 中重建可编辑图层。生图需要当前 Codex 提供 image_gen 工具。
+- **看图复刻**：直接给参考图，或先用 image_gen 生图，再在 Figma 中重建可编辑图层。image_gen 流程需要宿主提供同名生图工具；已有参考图可以直接导入。
 
 ```text
 $figma-agent 修改我选中的页面，优化排版和间距，保留原有内容。

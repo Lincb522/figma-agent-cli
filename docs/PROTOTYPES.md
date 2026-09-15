@@ -1,6 +1,6 @@
 # 交互动画
 
-让 Codex 在 Figma 中设置真实的原型交互：点击、悬停、按下、拖拽和延时触发，连接页面、弹层或组件状态。动画在 Figma 的 **Present / 原型预览** 中播放。
+让 Agent 在 Figma 中设置真实的原型交互：点击、悬停、按下、拖拽和延时触发，连接页面、弹层或组件状态。动画在 Figma 的 **Present / 原型预览** 中播放。
 
 ```text
 $figma-agent 给这个设置页面加交互，开关点击后用弹簧动画切换，帮助弹层从底部滑入，并补上关闭和返回。
@@ -8,7 +8,7 @@ $figma-agent 给这个设置页面加交互，开关点击后用弹簧动画切�
 
 ## 先试一个可编辑的开关
 
-在项目目录运行以下命令，或直接让 Codex 执行此示例。需先连接 Figma：
+在项目目录运行以下命令，或直接让 Agent 执行此示例。需先连接 Figma：
 
 ```sh
 node dist/cli.js exec examples/interactive-toggle.js
