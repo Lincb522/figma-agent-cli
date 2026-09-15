@@ -28,8 +28,6 @@
 
 于是做了这套 **CLI + Figma 插件 + Skill**。希望 Agent 能真正参与设计：画出来，检查细节，继续修改，再把结果接回开发。
 
-**不局限于 Codex。** 能执行本地命令、读写文件的 Agent 都可以接入；支持 Skill 就加载技能，也可以直接读取 CLI 指南使用。
-
 ## 一个图标，从参考图到可编辑结构
 
 用抖音图标走完一次真实流程：Agent 调用 `image_gen` 生图，在 Figma 中重建几何形状，再完成布尔组合、三色叠合与构造展示。
@@ -72,7 +70,7 @@ curl -fsSL https://raw.githubusercontent.com/Lincb522/figma-agent-cli/main/insta
 安装器会准备 CLI、插件与 Skill，启动后台桥接，并显示 **六位配对码** 和 **manifest.json 路径**。默认安装到 Codex 的 Skill 目录，完成后可以关闭终端。
 
 <details>
-<summary>使用其他 Agent，或已经下载仓库？</summary>
+<summary>自定义安装目录与本地安装</summary>
 
 指定宿主支持的技能目录：
 
@@ -114,7 +112,7 @@ Codex 用户安装后新开一个对话，例如：
 $figma-agent 帮我设计一个摄影 App 首页，完成后检查排版，再配置作品详情和收藏状态的交互。
 ```
 
-其他 Agent 按宿主方式加载 `figma-agent/SKILL.md`，描述需求即可。Skill 会检查工具与连接，缺少工具时下载，桥接未启动时启动，需要绑定时获取配对码。
+Skill 会检查工具与连接，缺少工具时下载，桥接未启动时启动，需要绑定时获取配对码。
 
 ## 可以一起完成的设计工作
 
