@@ -2,7 +2,7 @@
 
 一次使用 Figma Agent 的完整图标案例：生成白底参考，在 Figma 中重建原生几何和布尔关系，再展示完整图标、原位构造与拆解。
 
-[观看产品实录](../../docs/showcase/figma-agent-intro.mp4)中的 **46–84 秒**展示了这个流程。
+[观看产品实录](../../docs/showcase/figma-agent-intro-v7.mp4)中的 **46–84 秒**展示了这个流程。
 
 ## 1. 生图，确定视觉参考
 

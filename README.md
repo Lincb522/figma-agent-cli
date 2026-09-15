@@ -18,9 +18,9 @@
 
 </div>
 
-[![观看 Figma Agent 产品介绍](docs/showcase/intro-poster.jpg)](docs/showcase/figma-agent-intro.mp4)
+[![观看 Figma Agent 产品介绍](docs/showcase/intro-poster.jpg)](docs/showcase/figma-agent-intro-v7.mp4)
 
-<p align="center"><a href="docs/showcase/figma-agent-intro.mp4">观看介绍 · 1 分 40 秒 · Agent 与 Figma 同屏实录</a><br/><a href="docs/showcase/cover-landscape.png">横版封面</a> · <a href="docs/showcase/cover-portrait.png">竖版封面</a></p>
+<p align="center"><a href="docs/showcase/figma-agent-intro-v7.mp4">观看介绍 · 1 分 38 秒 · Agent 与 Figma 同屏实录</a><br/><a href="docs/showcase/cover-landscape.png">横版封面</a> · <a href="docs/showcase/cover-portrait.png">竖版封面</a></p>
 
 ## 为什么做这个
 
