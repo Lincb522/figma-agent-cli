@@ -2,7 +2,7 @@
 name: figma-agent
 description: "通过本机 Figma Agent CLI 检查连接、启动桥接并按需获取一次性配对码，在 Figma 中设计可编辑 UI、小图标、App Icon、Keyline 构造底板、布尔造型与原型交互动画，支持先 image_gen 生图再复刻，以及导出代码交接包供 Agent 实现参考。用户要求在 Figma 中设计、修改或复刻，把设计转代码或写回项目，连接 Figma Agent，添加点击、悬停、弹层、Smart Animate 或组件状态动画，或明确调用 figma-agent 时使用。"
 metadata:
-  version: "0.7.1"
+  version: "0.8.0"
 ---
 
 # Figma Agent
@@ -89,3 +89,14 @@ After a design mutation, export the affected frames from Figma and inspect the a
 An uncertain mutation may already have executed. Preserve its request ID and query `request`; for image reconstruction use `design recover`. Do not retry with a new ID or duplicate a screen just because a reply was lost. Inspect the affected document before deciding the next action.
 
 Reading a document proves the connection and read path only. Do not infer successful native booleans, editable reconstruction, or visual quality from connection status, a local preview, or a test fixture.
+
+## Multiple agents and concurrent routes
+
+Multiple CLI processes may share the bridge. Always resolve live sessions and explicitly route each operation.
+Use CLI 0.8.0 or newer and `batch <routes.json> --concurrency 4` to run independent session routes in parallel (1–32 active routes).
+The input is `{routes:[{name,sessionId,commands:[{id,method,params,timeoutMs}]}]}`.
+Each session occurs once per batch; request IDs are unique, stable, and supplied before dispatch.
+Use underlying methods/params from `schema`, not CLI command strings. Inline assets must already be hydrated.
+Route steps execute serially; a failure stops that route and reports skipped IDs while other routes continue.
+Batch is not atomic, does not lock out other clients, and has no output interpolation. Use separate calls when later parameters depend on earlier outputs.
+Keep mutations to shared nodes coordinated. A transport failure may hide an executed mutation: query the original request ID before retrying. Never silently reroute disconnected work.

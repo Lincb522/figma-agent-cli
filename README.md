@@ -144,3 +144,9 @@ Skill 会检查工具与连接，缺少工具时下载，桥接未启动时启�
 [CLI 用法](docs/CLI.md) · [图标设计](docs/ICONS.md) · [原型交互](docs/PROTOTYPES.md) · [图片复刻](docs/IMAGEGEN.md) · [验证记录](docs/VERIFICATION.md)
 
 开发者 **[zijiu522](https://github.com/Lincb522)** · [MIT License](LICENSE)
+
+## 多路协作
+
+页面、图标、原型可以分给不同 Agent，同时在各自连接的 Figma 文件中推进。
+CLI 支持多路批量调度和并发数量控制，每一路独立返回结果；同一连接的操作保持顺序。
+[查看多路并发用法](docs/CLI.md#多路并发)。

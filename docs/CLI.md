@@ -225,3 +225,36 @@ npm run test:ui
 ## 原型交互动画
 
 `prototype get <id>` 读取交互；`prototype set <id> <reactions.json>` 替换该节点全部交互；`prototype clear <id>` 清除交互。支持原生触发器、页面跳转、弹层、组件状态切换和动画缓动，具体字段用 `schema` 查询。配置和可运行示例见 [交互动画](PROTOTYPES.md)。
+
+## 多路并发
+
+多个 Agent 可以同时调用 CLI；桥接按 session 路由，结果按 request ID 对应。
+批量操作使用 `batch routes.json --concurrency 4`，并发上限为 1–32 路。
+先运行 `sessions` 获取实际连接 ID，然后创建：
+
+```json
+{
+  "concurrency": 4,
+  "routes": [
+    {"name":"页面设计","sessionId":"实际连接A","commands":[
+      {"id":"ui-task-001","method":"document","params":{}},
+      {"id":"ui-task-002","method":"fonts","params":{}}
+    ]},
+    {"name":"图标设计","sessionId":"实际连接B","commands":[
+      {"id":"icon-task-001","method":"document","params":{}}
+    ]}
+  ]
+}
+```
+
+每路指定唯一 session，同一路步骤按顺序执行；不同路同时运行。参数使用
+`schema` 中的底层 method/params，不是 CLI 子命令字符串；不支持自动替换前序结果。
+每条命令需要稳定且全批次唯一的 request ID，timeoutMs 默认 60000。
+提交前检查全部结构与连接；执行中某路失败或结果不确定，停止该路剩余步骤，其他路继续。
+输出包含每路结果及 skipped 请求 ID，任何一路失败时进程退出码为 1。
+
+并发单位是插件连接，不是 Figma 主线程的多线程。同一连接仍逐条执行，
+批次不是事务，也不独占连接：其他 Agent 的指令可能穿插在步骤间。
+不要让多个连接或 Agent 同时改同一批节点；独立任务使用不同文件或明确划分节点。
+断线不自动换到其他连接。结果不确定时用 `request <id>` 查询并检查画布，
+不要生成新 ID 重发；桥接重启后历史不保留。

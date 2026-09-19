@@ -1,0 +1,20 @@
+{
+  "concurrency": 2,
+  "routes": [
+    {
+      "name": "ui-design",
+      "sessionId": "REPLACE_WITH_LIVE_UI_SESSION",
+      "commands": [
+        { "id": "ui-document-001", "method": "document", "params": {} },
+        { "id": "ui-fonts-001", "method": "fonts", "params": {} }
+      ]
+    },
+    {
+      "name": "icon-design",
+      "sessionId": "REPLACE_WITH_LIVE_ICON_SESSION",
+      "commands": [
+        { "id": "icon-document-001", "method": "document", "params": {} }
+      ]
+    }
+  ]
+}

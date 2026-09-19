@@ -82,3 +82,26 @@ test('built CLI creates, retries once, executes, and exports through the real br
   assert.match(await readFile(resolve(dir,'code-reference','FigmaDesign.tsx'),'utf8'),/function FigmaDesign/);
   const failed = await drive(['export', 'missing-node', '--out', output]); assert.equal(failed.code, 1); assert.equal(JSON.parse(failed.stdout).error.code, 'NODE_NOT_FOUND'); assert.deepEqual(await readFile(output), png);
 });
+
+test('built batch CLI dispatches two routes concurrently over HTTP and reports partial failures', async t => {
+  const bridge = await startBridge({port:0,token:'batch-integration',pairingCode:'123456'});
+  await mkdir('work/verification',{recursive:true});
+  const dir=await mkdtemp(resolve('work/verification/batch-'));
+  t.after(async()=>{await bridge.close();await rm(dir,{recursive:true,force:true});});
+  await writeFile(resolve(dir,'session.json'),JSON.stringify({protocol:1,port:bridge.port,token:bridge.token}),{mode:0o600});
+  const a=bridge.broker.register({document:'A',page:'Page',pageId:'0:1',selection:[]});
+  const b=bridge.broker.register({document:'B',page:'Page',pageId:'0:1',selection:[]});
+  const file=resolve(dir,'routes.json');
+  await writeFile(file,JSON.stringify({routes:[
+    {name:'a',sessionId:a,commands:[{id:'batch-a',method:'document',params:{}},{id:'skipped-a',method:'document',params:{}}]},
+    {name:'b',sessionId:b,commands:[{id:'batch-b',method:'document',params:{}}]}
+  ]}));
+  const running=exec(process.execPath,['dist/cli.js','batch',file,'--state-dir',dir,'--concurrency','2'],{timeout:10000}).catch((e:any)=>e);
+  const [one,two]=await Promise.all([bridge.broker.poll(a).promise,bridge.broker.poll(b).promise]);
+  assert.equal(one?.id,'batch-a');assert.equal(two?.id,'batch-b');
+  bridge.broker.result(a,{ok:false,id:'batch-a',error:{code:'TEST_FAILURE',message:'expected'}});
+  bridge.broker.result(b,{ok:true,id:'batch-b',result:{document:'B'}});
+  const finished=await running;assert.equal(finished.code,1);
+  const report=JSON.parse(finished.stdout);assert.equal(report.ok,false);
+  assert.deepEqual(report.routes[0].skipped,['skipped-a']);assert.equal(report.routes[1].ok,true);
+});
